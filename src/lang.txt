@@ -1,0 +1,36 @@
+Settings|Einstellungen|Ajustes|Paramètres|Impostazioni|設定|Ustawienia
+Graphics settings|Grafik-Einstellungen|Configuración gráfica|Paramètres graphiques|Impostazioni grafiche|グラフィックの設定|Ustawienia graficzne
+Graphics device|Grafikkarte|Dispositivo grafico|Périphérique graphique|Dispositivo grafico|グラフィックスデバイス|Urządzenie graficzne
+Resolution|Auflösung|Resolución|Résolution|Risoluzione|解像度|Rozdzielczość
+Fullscreen|Vollbild|Pantalla completa|Plein écran|Schermo intero|フルスクリーン|Pełny ekran
+Audio settings|Audio-Einstellungen|Ajustes de audio|Paramètres audio|Impostazioni audio|オーディオ設定|Ustawienia audio
+Output device|Ausgabegerät|Dispositivo de salida|Périphérique de sortie|Dispositivo di uscita|出力デバイス|Urządzenie wyjścia
+Language|Sprache|Idioma|Langue|Lingua|言語|Język
+Controller selection|Wahl der Steuerung|Selección de controlador|Choix de la manette|Selezione controller|コントローラの選択|Wybór kontrolera
+Additional controller|Zusätzliche Controller|Controlador adicional|Manette supplémentaire|Controller aggiuntivo|追加のコントローラ|Dodatkowy kontroler
+Controller number|Controller-Nummer|Controlador número|Numéro de manette|Numero di controller|コントローラ番号|Numer kontrolera
+Layout|Layout|Interfaz|Interface|Disposizione|のレイアウト|Układ
+Configuration Layout|Steuerungskonfiguration|Configuración de botones|Configuration|Configurazione|レイアウトの設定|Konfiguracja układu
+Movement|Bewegung|Movimiento|Déplacement|Movimento|移動|Ruch
+Action|Aktion|Acción|Action|Azione|アクション|Akcja
+Up|Nach oben|Arriba|Haut|Su|上|Góra
+Down|Nach unten|Abajo|Bas|Giù|下|Dół
+Left|Links|Izquierda|Gauche|Sinistra|左|Lewo
+Right|Rechts|Derecha|Droite|Destra|右|Prawo
+Jump|Sprung|Saltar|Sauter|Saltare|ジャンプ|Skok
+Start|Start|Iniciar|Démarrer|Inizio|スタート|Start
+Save settings and launch Sonic 4|Einstellungen speichern und Sonic 4 starten|Guardar la configuración e iniciar Sonic 4|Sauvegarder les réglages et démarrer Sonic 4|Salva le impostazioni e avvia Sonic 4|設定を保存してゲームをプレイ|Zapisz ustawienia i uruchom Sonic 4
+Player|Spieler|Jugador|Joueur|Giocatore|プレイヤー|Gracz
+Select|Wählen|Seleccionar|Sélectionnez|Selezionare|決定|Wybierz
+Back|Zurück|Volver|Retour|Indietro|戻る|Do tyłu
+Keyboard|Tastatur|Teclado|Clavier|Tastiera|キーボード|Klawiatura
+Gamepad|Gamepad|Gamepad|Gamepad|Gamepad|ゲームパッド|Gamepad
+Score Attack / Time Attack|Modus: Punktangriff / Zeitangriff|Modo: Por puntos / Contrarreloj|Chasse aux points / Contre la montre|Attacco al tempo / Attacco al punteggio|スコアアタック / タイムアタック|Wynik / Czas
+Press!|Drücken!|¡Pulsa!|Presse !|Premi!|を押し!|Nacisnij
+Reset to Default Settings|Auf Standard zurücksetzen|Volver a configuración inicial|Réinitialiser|Ripristina predefinito|デフォルトにリセット|Reset do ustawień domyślnych
+Configuration|Konfiguration|Configuración|Configuration|Configurazione|コンフィギュレーション|Konfiguracja
+Configuration saved.|Einstellungen gespeichert.|Configuración guardada.|Configuration sauvegardée.|Configurazione salvata.|設定を保存しました.|Konfiguracja zapisana.
+Super Sonic|Super Sonic|Super Sonic|Super Sonic|Super Sonic|スーパーソニック|Super Sonic
+Vibrate|Vibration|Vibración|Vibration|Vibrazione|バイブ|Wibracje
+Leaderboards|Bestenlisten|Marcadores|Classements|Classifiche|リーダーボード|Tabela wyników
+
