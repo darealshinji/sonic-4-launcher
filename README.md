@@ -15,9 +15,8 @@ After that's done run `gen_images_h.bat` and open `SonicLauncher.sln` to build t
 License
 -------
 Most of the stuff I've written is MIT licensed, check the source file headers for details.
-This project is using the FLTK library which is LGPLv2 licensed but with certain exceptions.
-See fltk/fltk-1.3.4-master/COPYING for details.
-The image files are copyrighted and not under a free license.
+This project is using the FLTK library which is LGPLv2 licensed but with certain exceptions,
+see fltk/COPYING for details. The image files are copyrighted and not under a free license.
 
 Problems
 --------
