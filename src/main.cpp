@@ -46,13 +46,12 @@
 #include "lang.h"
 #include "configuration.hpp"
 
-#define MAX_DRIVE_LENGTH     _MAX_DRIVE * sizeof(wchar_t)
-#define MAX_PATH_LENGTH      2048 * sizeof(wchar_t)
-#define MAX_DIR_LENGTH       MAX_PATH_LENGTH
+#define MAX_PATH_LENGTH      4096
 #define STRINGIFY(x)         #x
 #define XSTRINGIFY(x)        STRINGIFY(x)
 #define FLTK_VERSION_STRING  XSTRINGIFY(FL_MAJOR_VERSION) "." XSTRINGIFY(FL_MINOR_VERSION) "." XSTRINGIFY(FL_PATCH_VERSION)
 #define LS                   12  /* default labelsize */
+#define MENUITEM(x)          { x, 0,0,0,0, FL_NORMAL_LABEL, FL_HELVETICA, LS, 0 }
 
 class MyChoice : public Fl_Choice
 {
@@ -156,14 +155,14 @@ static wchar_t confFile[MAX_PATH_LENGTH];
 
 static const Fl_Menu_Item langItems[] =
 {
-	{ "English", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },
-	{ "Deutsch", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },
-	{ "Espa" "\xC3\xB1" "ol", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },  /* Español */
-	{ "Fran" "\xC3\xA7" "ais", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },  /* Français */
-	{ "Italiano", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },
-	{ "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },  /* Japanese */
-	//{ "Polski", 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },  /* not available as in-game language */
-	{ NULL, 0,0,0,0,0,0,0,0 }
+	MENUITEM("English"),
+	MENUITEM("Deutsch"),
+	MENUITEM("Espa" "\xC3\xB1" "ol"),  /* Español */
+	MENUITEM("Fran" "\xC3\xA7" "ais"),  /* Français */
+	MENUITEM("Italiano"),
+	MENUITEM("\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"),  /* Japanese */
+	//MENUITEM("Polski"),  /* not available as in-game language */
+	{0}
 };
 
 
@@ -241,13 +240,13 @@ int MyChoice::handle(int event)
 		return 0;
 	}
 
-	_menu[prev()].labelfont_ = labelfont();
-	_menu[value()].labelfont_ = labelfont();
+	_menu[prev()].labelfont_ = FL_HELVETICA;
+	_menu[value()].labelfont_ = FL_HELVETICA;
 	prev(value());
 
 	if (event == FL_PUSH) {
 		/* highlight the currently selected value */
-		_menu[value()].labelfont_ = labelfont() | FL_BOLD;
+		_menu[value()].labelfont_ = FL_HELVETICA_BOLD;
 
 		if (Fl::visible_focus()) {
 			Fl::focus(this);
@@ -280,24 +279,23 @@ int MyChoice::handle(int event)
 static bool getModuleRootDir(void)
 {
 	wchar_t mod[MAX_PATH_LENGTH];
-	wchar_t drv[MAX_DRIVE_LENGTH];
-	wchar_t dir[MAX_DIR_LENGTH];
+	wchar_t *wcp = NULL;
 
 	if (!GetModuleFileNameW(NULL, mod, MAX_PATH_LENGTH)) {
 		return false;
 	}
 
-	if (_wsplitpath_s(mod, drv, MAX_DRIVE_LENGTH, dir, MAX_DIR_LENGTH, NULL, 0, NULL, 0) != 0) {
+	if ((wcp = wcsrchr(mod, L'\\')) == NULL) {
 		return false;
 	}
+	*wcp = 0;
 
-	SecureZeroMemory(&moduleRootDir, MAX_DIR_LENGTH);
-	wcscpy_s(moduleRootDir, MAX_DIR_LENGTH - 1, drv);
-	wcscat_s(moduleRootDir, MAX_DIR_LENGTH - 1, dir);
-
+	SecureZeroMemory(&moduleRootDir, MAX_PATH_LENGTH);
 	SecureZeroMemory(&confFile, MAX_PATH_LENGTH);
-	wcscpy_s(confFile, MAX_PATH_LENGTH - 1, moduleRootDir);
-	wcscat_s(confFile, MAX_PATH_LENGTH - 1, L"//main.conf");
+
+	wcscpy_s(moduleRootDir, MAX_PATH_LENGTH - 1, mod);
+	wcscpy_s(confFile, MAX_PATH_LENGTH - 1, mod);
+	wcscat_s(confFile, MAX_PATH_LENGTH - 1, L"\\main.conf");
 
 	return true;
 }
@@ -310,7 +308,7 @@ static int launchGame(void)
 	PROCESS_INFORMATION pi;
 
 	wcscpy_s(command, MAX_PATH_LENGTH - 1, moduleRootDir);
-	wcscat_s(command, MAX_PATH_LENGTH - 1, L"//Sonic_vis.exe");
+	wcscat_s(command, MAX_PATH_LENGTH - 1, L"\\Sonic_vis.exe");
 
 	SecureZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -484,17 +482,17 @@ static void startWindow(bool restart)
 				Fl_Menu_Item resItems[szResItems + 1];
 
 				for (int i = 0; i < szResItems; ++i) {
-					resItems[i] = { configuration::resList[i].l, 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 };
+					resItems[i] = MENUITEM(configuration::resList[i].l);
 				}
-				resItems[szResItems] = { NULL, 0,0,0,0,0,0,0,0 };
+				resItems[szResItems] = {0};
 
 				/* Display list */
 				for (int i = 0; i < sc; ++i) {
 					_snprintf_s(buf, sizeof(buf) - 1, "Display %d", i);
 					devLabels[i] = buf;
-					devItems[i] = { devLabels[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 };
+					devItems[i] = MENUITEM(devLabels[i].c_str());
 				}
-				devItems[sc] = { NULL, 0,0,0,0,0,0,0,0 };
+				devItems[sc] = {0};
 
 				/* Background image */
 				{ Fl_Box *o = new Fl_Box(-1, 9, 1, 1);
@@ -537,9 +535,9 @@ static void startWindow(bool restart)
 			g2->copy_label(buf);
 			{
 				const Fl_Menu_Item conItems[] = {
-					{ ui_Keyboard[lang], 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },
-					{ ui_Gamepad[lang], 0,0,0,0, FL_NORMAL_LABEL, 0, LS, 0 },
-					{ NULL, 0,0,0,0,0,0,0,0 }
+					MENUITEM(ui_Keyboard[lang]),
+					MENUITEM(ui_Gamepad[lang]),
+					{0}
 				};
 
 				/* Background image */
