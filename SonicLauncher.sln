@@ -4,6 +4,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SonicLauncher", "SonicLauncher.vcxproj", "{821B1F12-191E-439F-9297-75F9B1DE5AB2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D635E0B-8F67-34C2-B413-FF873F7FE8CA} = {2D635E0B-8F67-34C2-B413-FF873F7FE8CA}
+		{95669827-2916-3DB2-8E29-199C6157A5F5} = {95669827-2916-3DB2-8E29-199C6157A5F5}
+		{8F85E933-51CD-435E-AEB1-86EF19042335} = {8F85E933-51CD-435E-AEB1-86EF19042335}
+		{87191E42-2BE2-30EA-AF2E-34CAA452DB53} = {87191E42-2BE2-30EA-AF2E-34CAA452DB53}
+		{44B1B074-401E-37DC-AAE2-3E1B863E15DA} = {44B1B074-401E-37DC-AAE2-3E1B863E15DA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk", "fltk\fltk.vcxproj", "{2D635E0B-8F67-34C2-B413-FF873F7FE8CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk_images", "fltk\fltk_images.vcxproj", "{44B1B074-401E-37DC-AAE2-3E1B863E15DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk_png", "fltk\fltk_png.vcxproj", "{95669827-2916-3DB2-8E29-199C6157A5F5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk_z", "fltk\fltk_z.vcxproj", "{87191E42-2BE2-30EA-AF2E-34CAA452DB53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "images_h", "images\images_h.vcxproj", "{8F85E933-51CD-435E-AEB1-86EF19042335}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F17F4CA1-FAD1-43F3-8756-ED992159D6AE} = {F17F4CA1-FAD1-43F3-8756-ED992159D6AE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hexdump", "src\hexdump.vcxproj", "{F17F4CA1-FAD1-43F3-8756-ED992159D6AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,6 +34,18 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{821B1F12-191E-439F-9297-75F9B1DE5AB2}.Release|x86.ActiveCfg = Release|Win32
 		{821B1F12-191E-439F-9297-75F9B1DE5AB2}.Release|x86.Build.0 = Release|Win32
+		{2D635E0B-8F67-34C2-B413-FF873F7FE8CA}.Release|x86.ActiveCfg = Release|Win32
+		{2D635E0B-8F67-34C2-B413-FF873F7FE8CA}.Release|x86.Build.0 = Release|Win32
+		{44B1B074-401E-37DC-AAE2-3E1B863E15DA}.Release|x86.ActiveCfg = Release|Win32
+		{44B1B074-401E-37DC-AAE2-3E1B863E15DA}.Release|x86.Build.0 = Release|Win32
+		{95669827-2916-3DB2-8E29-199C6157A5F5}.Release|x86.ActiveCfg = Release|Win32
+		{95669827-2916-3DB2-8E29-199C6157A5F5}.Release|x86.Build.0 = Release|Win32
+		{87191E42-2BE2-30EA-AF2E-34CAA452DB53}.Release|x86.ActiveCfg = Release|Win32
+		{87191E42-2BE2-30EA-AF2E-34CAA452DB53}.Release|x86.Build.0 = Release|Win32
+		{8F85E933-51CD-435E-AEB1-86EF19042335}.Release|x86.ActiveCfg = Release|Win32
+		{8F85E933-51CD-435E-AEB1-86EF19042335}.Release|x86.Build.0 = Release|Win32
+		{F17F4CA1-FAD1-43F3-8756-ED992159D6AE}.Release|x86.ActiveCfg = Release|Win32
+		{F17F4CA1-FAD1-43F3-8756-ED992159D6AE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

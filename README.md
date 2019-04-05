@@ -8,9 +8,7 @@ following Unix shell command: `tail -c+178689 SonicLauncher.exe > SonicLauncher.
 
 How to build
 ------------
-Checkout the submodule: `git submodule init && git submodule update`.
-Then open `fltk/build/FLTK.sln` in Visual Studio 2017 and compile the project.
-After that's done run `gen_images_h.bat` and open `SonicLauncher.sln` to build the launcher.
+Checkout the submodule with `git submodule init && git submodule update` and open `SonicLauncher.sln`.
 
 License
 -------

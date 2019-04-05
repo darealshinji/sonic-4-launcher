@@ -28,14 +28,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir>Bin\</OutDir>
-    <IntDir>Obj\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Obj\</OutDir>
+    <IntDir>$(SolutionDir)\Obj\$(ProjectName)\</IntDir>
     <TargetName>fltk_png</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\src;$(SolutionDir)\src\zlib;$(SolutionDir)\src\jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\src\zlib;$(ProjectDir)\src\jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <ExceptionHandling />
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -54,29 +54,21 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\src\png\png.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngerror.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngget.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngmem.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngpread.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngread.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngrio.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngrtran.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngrutil.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngset.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngtrans.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngwio.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngwrite.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngwtran.c" />
-    <ClCompile Include="$(SolutionDir)\src\png\pngwutil.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\fltk_z.vcxproj">
-      <Project>{87191E42-2BE2-30EA-AF2E-34CAA452DB53}</Project>
-      <Name>fltk_z</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
+    <ClCompile Include="$(ProjectDir)\src\png\png.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngerror.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngget.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngmem.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngpread.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngread.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngrio.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngrtran.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngrutil.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngset.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngtrans.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngwio.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngwrite.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngwtran.c" />
+    <ClCompile Include="$(ProjectDir)\src\png\pngwutil.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

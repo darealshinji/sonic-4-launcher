@@ -28,14 +28,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir>Bin\</OutDir>
-    <IntDir>Obj\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Obj\</OutDir>
+    <IntDir>$(SolutionDir)\Obj\$(ProjectName)\</IntDir>
     <TargetName>fltk_z</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <SourcePath>$(VC_SourcePath)\fltk;</SourcePath>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <ExceptionHandling />
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -54,23 +57,23 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\src\zlib\adler32.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\compress.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\crc32.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\deflate.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\adler32.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\compress.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\crc32.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\deflate.c" />
     <!--
-    <ClCompile Include="$(SolutionDir)\src\zlib\gzclose.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\gzlib.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\gzread.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\gzwrite.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\gzclose.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\gzlib.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\gzread.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\gzwrite.c" />
     -->
-    <ClCompile Include="$(SolutionDir)\src\zlib\inflate.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\infback.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\inftrees.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\inffast.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\trees.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\uncompr.c" />
-    <ClCompile Include="$(SolutionDir)\src\zlib\zutil.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\inflate.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\infback.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\inftrees.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\inffast.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\trees.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\uncompr.c" />
+    <ClCompile Include="$(ProjectDir)\src\zlib\zutil.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

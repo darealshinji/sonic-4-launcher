@@ -29,14 +29,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir>Bin\</OutDir>
-    <IntDir>Obj\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Obj\</OutDir>
+    <IntDir>$(SolutionDir)\Obj\$(ProjectName)\</IntDir>
     <TargetName>fltk_images</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\src;$(SolutionDir)\src\zlib;$(SolutionDir)\src\jpeg;$(SolutionDir)\src\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\src\zlib;$(ProjectDir)\src\jpeg;$(ProjectDir)\src\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -56,34 +56,14 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\src\src\fl_images_core.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_BMP_Image.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_File_Icon2.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_GIF_Image.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_Help_Dialog.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_JPEG_Image.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_PNG_Image.cxx" />
-    <ClCompile Include="$(SolutionDir)\src\src\Fl_PNM_Image.cxx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\fltk.vcxproj">
-      <Project>{2D635E0B-8F67-34C2-B413-FF873F7FE8CA}</Project>
-      <Name>fltk</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\fltk_png.vcxproj">
-      <Project>{95669827-2916-3DB2-8E29-199C6157A5F5}</Project>
-      <Name>fltk_png</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\fltk_z.vcxproj">
-      <Project>{87191E42-2BE2-30EA-AF2E-34CAA452DB53}</Project>
-      <Name>fltk_z</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
+    <ClCompile Include="$(ProjectDir)\src\src\fl_images_core.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_BMP_Image.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon2.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_GIF_Image.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_JPEG_Image.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_PNG_Image.cxx" />
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_PNM_Image.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
