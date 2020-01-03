@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2019, djcj <djcj@gmx.de>
+ * Copyright (c) 2019-2020, djcj <djcj@gmx.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,9 +71,7 @@ private:
 public:
 	configuration(const wchar_t *filename);
 
-	static uchar getDxKey(int fltk);
-	static const char *getNameDx(uchar dx);
-	static bool is_valid_dxkey(uchar dx);
+	static bool isIgnoredKey(uchar dx);
 
 	bool loadConfig();
 	void setDefaultKeys();

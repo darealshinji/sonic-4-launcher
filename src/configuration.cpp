@@ -40,137 +40,10 @@
 #define CONF_SIZE        53
 #define MAX_PATH_LENGTH  2048 * sizeof(wchar_t)
 #define TO_UINT32(x)     static_cast<uint32_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8 | (0xFF & x[2]) << 16 | (0xFF & x[3]) << 24))
+#define ARRLEN(x)        (sizeof(x) / sizeof(*x))
 
 
-typedef struct {
-	int fltk;
-	uchar dxkey;
-	const char *name;
-} keyList_t;
-
-
-static const keyList_t keylist[] =
-{
-	//{FL_Escape, DIK_ESCAPE, "Escape"},
-	{'1', DIK_1, "1"},
-	{'2', DIK_2, "2"},
-	{'3', DIK_3, "3"},
-	{'4', DIK_4, "4"},
-	{'5', DIK_5, "5"},
-	{'6', DIK_6, "6"},
-	{'7', DIK_7, "7"},
-	{'8', DIK_8, "8"},
-	{'9', DIK_9, "9"},
-	{'0', DIK_0, "0"},
-	{'-', DIK_MINUS, "-"},
-	{'=', DIK_EQUALS, "="},
-	{FL_BackSpace, DIK_BACK, "Back"},
-	{FL_Tab, DIK_TAB, "Tab"},
-	{'q', DIK_Q, "Q"},
-	{'w', DIK_W, "W"},
-	{'e', DIK_E, "E"},
-	{'r', DIK_R, "R"},
-	{'t', DIK_T, "T"},
-	{'y', DIK_Y, "Y"},
-	{'u', DIK_U, "U"},
-	{'i', DIK_I, "I"},
-	{'o', DIK_O, "O"},
-	{'p', DIK_P, "P"},
-	{'[', DIK_LBRACKET, "["},
-	{']', DIK_RBRACKET, "]"},
-	{FL_Enter, DIK_RETURN, "Enter"},
-	{FL_Control_L, DIK_LCONTROL, "Left Ctrl"},
-	{'a', DIK_A, "A"},
-	{'s', DIK_S, "S"},
-	{'d', DIK_D, "D"},
-	{'f', DIK_F, "F"},
-	{'g', DIK_G, "G"},
-	{'h', DIK_H, "H"},
-	{'j', DIK_J, "J"},
-	{'k', DIK_K, "K"},
-	{'l', DIK_L, "L"},
-	{';', DIK_SEMICOLON, ";"},
-	{'\'', DIK_APOSTROPHE, "'"},
-	{'`', DIK_GRAVE, "`"},
-	{FL_Shift_L, DIK_LSHIFT, "Shift"},
-	{'\\', DIK_BACKSLASH, "\\"},
-	{'z', DIK_Z, "Z"},
-	{'x', DIK_X, "X"},
-	{'c', DIK_C, "C"},
-	{'v', DIK_V, "V"},
-	{'b', DIK_B, "B"},
-	{'n', DIK_N, "N"},
-	{'m', DIK_M, "M"},
-	{',', DIK_COMMA, ","},
-	{'.', DIK_PERIOD, "."},
-	{'/', DIK_SLASH, "/"},
-	{FL_Shift_R, DIK_RSHIFT, "Right Shift"},
-	{FL_KP + '*', DIK_MULTIPLY, "Num *"},
-	{FL_Alt_L, DIK_LMENU, "Alt"},
-	{' ', DIK_SPACE, "Space"},
-	//{FL_Caps_Lock, DIK_CAPITAL, "Caps Lock"},
-	{FL_F + 1, DIK_F1, "F1"},
-	{FL_F + 2, DIK_F2, "F2"},
-	{FL_F + 3, DIK_F3, "F3"},
-	{FL_F + 4, DIK_F4, "F4"},
-	{FL_F + 5, DIK_F5, "F5"},
-	{FL_F + 6, DIK_F6, "F6"},
-	{FL_F + 7, DIK_F7, "F7"},
-	{FL_F + 8, DIK_F8, "F8"},
-	{FL_F + 9, DIK_F9, "F9"},
-	{FL_F + 10, DIK_F10, "F10"},
-	//{FL_Num_Lock, DIK_NUMLOCK, "Num Lock"},
-	//{FL_Scroll_Lock, DIK_SCROLL, "Scroll Lock"},
-	{FL_KP + '7', DIK_NUMPAD7, "Num 7"},
-	{FL_KP + '8', DIK_NUMPAD8, "Num 8"},
-	{FL_KP + '9', DIK_NUMPAD9, "Num 9"},
-	{FL_KP + '-', DIK_SUBTRACT, "Num -"},
-	{FL_KP + '4', DIK_NUMPAD4, "Num 4"},
-	{FL_KP + '5', DIK_NUMPAD5, "Num 5"},
-	{FL_KP + '6', DIK_NUMPAD6, "Num 6"},
-	{FL_KP + '+', DIK_ADD, "Num +"},
-	{FL_KP + '1', DIK_NUMPAD1, "Num 1"},
-	{FL_KP + '2', DIK_NUMPAD2, "Num 2"},
-	{FL_KP + '3', DIK_NUMPAD3, "Num 3"},
-	{FL_KP + '0', DIK_NUMPAD0, "Num 0"},
-	{FL_KP + '.', DIK_DECIMAL, "Num ."},
-	{FL_Iso_Key, DIK_OEM_102, "<> \\|"},
-	{FL_F + 11, DIK_F11, "F11"},
-	{FL_F + 12, DIK_F12, "F12"},
-	{FL_F + 13, DIK_F13, "F13"},
-	{FL_F + 14, DIK_F14, "F14"},
-	{FL_F + 15, DIK_F15, "F15"},
-	{FL_Kana, DIK_KANA, "Kana"},
-	{FL_Yen, DIK_YEN, "\xC2\xA5"},
-	//{FL_KP + '=', DIK_NUMPADEQUALS, "Num ="},  // ???
-	{'^', DIK_CIRCUMFLEX, "^"},
-	{'@', DIK_AT, "@"},
-	{':', DIK_COLON, ":"},
-	{FL_JIS_Underscore, DIK_UNDERLINE, "_"},
-	{FL_KP_Enter, DIK_NUMPADENTER, "Num Enter"},
-	{FL_Control_R, DIK_RCONTROL, "Right Ctrl"},
-	//{FL_KP + ',', DIK_NUMPADCOMMA, "Num ,"},  // ???
-	{FL_KP + '/', DIK_DIVIDE, "Num /"},
-	{FL_Alt_R, DIK_RMENU, "Right Alt"},
-	{FL_Pause, DIK_PAUSE, "Pause"},
-	{FL_Home, DIK_HOME, "Home"},
-	{FL_Up, DIK_UP, "Up"},
-	{FL_Page_Up, DIK_PRIOR, "Page Up"},
-	{FL_Left, DIK_LEFT, "Left"},
-	{FL_Right, DIK_RIGHT, "Right"},
-	{FL_End, DIK_END, "End"},
-	{FL_Down, DIK_DOWN, "Down"},
-	{FL_Page_Down, DIK_NEXT, "Page Down"},
-	{FL_Insert, DIK_INSERT, "Insert"},
-	{FL_Delete, DIK_DELETE, "Delete"},
-	//{FL_Meta_L, DIK_LWIN, "Left Win"},
-	//{FL_Meta_R, DIK_RWIN, "Right Win"},
-	{FL_Menu, DIK_APPS, "Menu"}
-};
-
-static const int szResList = 12;
-
-const res_t configuration::resList[szResList] =
+const res_t configuration::resList[] =
 {
 	{640, 480, "640x480"},
 	{800, 600, "800x600"},
@@ -189,17 +62,17 @@ const res_t configuration::resList[szResList] =
 
 uint16_t configuration::resXN(int n)
 {
-	return (n < szResList) ? resList[n].w : resList[0].w;
+	return (n < ARRLEN(configuration::resList)) ? resList[n].w : resList[0].w;
 }
 
 uint16_t configuration::resYN(int n)
 {
-	return (n < szResList) ? resList[n].h : resList[0].h;
+	return (n < ARRLEN(configuration::resList)) ? resList[n].h : resList[0].h;
 }
 
 void configuration::resN(size_t n)
 {
-	if (n < szResList) {
+	if (n < ARRLEN(configuration::resList)) {
 		_resX = resXN(n);
 		_resY = resYN(n);
 		_resN = n;
@@ -210,49 +83,46 @@ void configuration::resN(size_t n)
 	}
 }
 
-const char *configuration::getNameDx(uchar dx)
+bool configuration::isIgnoredKey(uchar dx)
 {
-	for (int i = 0; i < (sizeof(keylist) / sizeof(*keylist)); ++i) {
-		if (keylist[i].dxkey == dx) {
-			return keylist[i].name;
-		}
+	switch (dx) {
+	case DIK_APPS:
+	case DIK_CALCULATOR:
+	case DIK_CAPITAL:
+	case DIK_CONVERT:
+	case DIK_ESCAPE:
+	case DIK_KANA:
+	case DIK_KANJI:
+	case DIK_LWIN:
+	case DIK_MAIL:
+	case DIK_MEDIASELECT:
+	case DIK_MEDIASTOP:
+	case DIK_MUTE:
+	case DIK_MYCOMPUTER:
+	case DIK_NEXTTRACK:
+	case DIK_NOCONVERT:
+	case DIK_NUMLOCK:
+	case DIK_PLAYPAUSE:
+	case DIK_POWER:
+	case DIK_PREVTRACK:
+	case DIK_RWIN:
+	case DIK_SCROLL:
+	case DIK_SLEEP:
+	case DIK_STOP:
+	case DIK_VOLUMEDOWN:
+	case DIK_VOLUMEUP:
+	case DIK_WAKE:
+	case DIK_WEBBACK:
+	case DIK_WEBFAVORITES:
+	case DIK_WEBFORWARD:
+	case DIK_WEBHOME:
+	case DIK_WEBREFRESH:
+	case DIK_WEBSEARCH:
+	case DIK_WEBSTOP:
+		return true;
 	}
-	return "<not set>";
-}
 
-bool configuration::is_valid_dxkey(uchar dx)
-{
-	for (size_t i = 0; i < (sizeof(keylist) / sizeof(*keylist)); ++i) {
-		if (keylist[i].dxkey == dx) {
-			return true;
-		}
-	}
 	return false;
-}
-
-uchar configuration::getDxKey(int fltk)
-{
-	switch (fltk) {
-	case FL_Escape:
-	case FL_Caps_Lock:
-	case FL_Num_Lock:
-	case FL_Scroll_Lock:
-	case FL_Meta_L:  /* Left Windows key */
-	case FL_Meta_R:  /* Right Windows key */
-		/* Ignore all these keys */
-		return 0;
-	}
-
-	if (fltk >= 'A' && fltk <= 'Z') {
-		fltk = tolower(fltk);
-	}
-
-	for (size_t i = 0; i < (sizeof(keylist) / sizeof(*keylist)); ++i) {
-		if (keylist[i].fltk == fltk) {
-			return keylist[i].dxkey;
-		}
-	}
-	return 0;
 }
 
 bool configuration::loadConfig(void)
@@ -282,7 +152,7 @@ bool configuration::loadConfig(void)
 	_resY = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
 	p += 2;
 
-	for (int i = 0; i < szResList; ++i) {
+	for (int i = 0; i < ARRLEN(configuration::resList); ++i) {
 		if (_resX == resList[i].w && _resY == resList[i].h) {
 			_resN = i;
 			break;
@@ -300,7 +170,7 @@ bool configuration::loadConfig(void)
 	_display = (p[4] > _screenCount - 1) ? 0 : p[4];
 	p += 5;
 
-#define GETKEY(var,def)  var=p[0]; p+=4; if (!is_valid_dxkey(var)) { var=def; }
+#define GETKEY(var,def)  var=p[0]; p+=4; if (isIgnoredKey(var)) { var=def; }
 
 	GETKEY(_keyLeft, DIK_LEFT);
 	GETKEY(_keyRight, DIK_RIGHT);
@@ -351,8 +221,6 @@ void configuration::loadDefaultConfig(void)
 bool configuration::saveConfig(void)
 {
 	FILE *fp = NULL;
-	unsigned char buf[CONF_SIZE];
-	unsigned char *p = buf;
 
 	if (_wfopen_s(&fp, _confFile, L"wb") != NULL) {
 		return false;

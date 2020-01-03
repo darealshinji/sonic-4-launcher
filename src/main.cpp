@@ -24,6 +24,11 @@
 
 #include <Windows.h>
 
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
+#include <Dinput.h>
+
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
@@ -45,12 +50,39 @@
 #include "lang.h"
 #include "configuration.hpp"
 
+// https://blogs.msdn.microsoft.com/oldnewthing/20041025-00/?p=37483
+// http://stackoverflow.com/questions/1749972/determine-the-current-hinstance
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
+
 #define MAX_PATH_LENGTH      4096
 #define STRINGIFY(x)         #x
 #define XSTRINGIFY(x)        STRINGIFY(x)
 #define FLTK_VERSION_STRING  XSTRINGIFY(FL_MAJOR_VERSION) "." XSTRINGIFY(FL_MINOR_VERSION) "." XSTRINGIFY(FL_PATCH_VERSION)
 #define LS                   12  /* default labelsize */
 #define MENUITEM(x)          { x, 0,0,0,0, FL_NORMAL_LABEL, FL_HELVETICA, LS, 0 }
+#define ARRLEN(x)            (sizeof(x) / sizeof(*x))
+
+
+typedef struct {
+	uchar dxkey;
+	const char *name;
+} keyList_t;
+
+
+class DirectInput
+{
+private:
+	IDirectInput8 *m_directInput;
+	IDirectInputDevice8 *m_keyboard;
+
+public:
+	unsigned char m_keyboardState[256];
+
+	DirectInput();
+	bool init();
+	bool ReadKeyboard();
+};
 
 class MyChoice : public Fl_Choice
 {
@@ -123,8 +155,9 @@ public:
 static const char *windowTitle = "SONIC THE HEDGEHOG 4 Episode I";
 static void startWindow(bool restart);
 
-static configuration *config;
-static MyWindow *win;
+static configuration *config = NULL;
+static DirectInput *directinput = NULL;
+static MyWindow *win = NULL;
 static Fl_Group *g2_keyboard, *g2_gamepad;
 static kbButton *btUp, *btDown, *btLeft, *btRight, *btA, *btB, *btX, *btY, *btStart;
 
@@ -165,29 +198,188 @@ static const Fl_Menu_Item langItems[] =
 };
 
 
+DirectInput::DirectInput() {
+}
+
+bool DirectInput::init()
+{
+	if (DirectInput8Create(HINST_THISCOMPONENT, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL) != DI_OK) {
+		return false;
+	}
+
+	if (m_directInput->CreateDevice(GUID_SysKeyboard, &m_keyboard, NULL) != DI_OK) {
+		return false;
+	}
+
+	if (m_keyboard->SetDataFormat(&c_dfDIKeyboard) != DI_OK) {
+		return false;
+	}
+
+	if (m_keyboard->Acquire() != DI_OK) {
+		return false;
+	}
+
+	return true;
+}
+
+bool DirectInput::ReadKeyboard()
+{
+	memset(m_keyboardState, 0, 256);
+
+	HRESULT res = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)m_keyboardState);
+
+	if (res != DI_OK) {
+		/* If the keyboard lost focus or was not acquired then try to get control back. */
+		if (res == DIERR_INPUTLOST || res == DIERR_NOTACQUIRED) {
+			m_keyboard->Acquire();
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
+
 int MyWindow::handle(int event)
 {
+	uchar dx = 0;
 	kbButton *bt = but();
 
 	if (event == FL_KEYDOWN && bt) {
-		uchar dx = configuration::getDxKey(Fl::event_key());
+		if (directinput->init()) {
+			while (true) {
+				if (!directinput->ReadKeyboard()) {
+					continue;
+				}
 
-		if (dx == 0) {
-			/* restore label */
-			bt->dxkey(bt->dxkey());
-		} else {
-			bt->dxkey(dx);
+				for (short i = 0; i < 256; ++i) {
+					if ((directinput->m_keyboardState[i] & 128) == 0) {
+						continue;
+					}
+					dx = static_cast<uchar>(i);
+					break;
+				}
+
+				/* don't ignore escape */
+				if (dx != DIK_ESCAPE && configuration::isIgnoredKey(dx)) {
+					continue;
+				}
+				break;
+			}
 		}
+
+		bt->dxkey(dx);
 		but(NULL);
 		redraw();
 	}
 	return Fl_Double_Window::handle(event);
 }
 
-void kbButton::dxkey(uchar n)
+void kbButton::dxkey(uchar dx)
 {
-	_dxkey = n;
-	label(configuration::getNameDx(n));
+	// https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ee418641(v%3Dvs.85)
+	const keyList_t keyNames[] =
+	{
+		{DIK_ABNT_C1, "ABNT C1"},
+		{DIK_ABNT_C2, "ABNT C2"},
+		{DIK_APOSTROPHE, "'"},
+		{DIK_AT, "@"},
+		{DIK_AX, "AX"},
+		{DIK_BACK, "Back"},
+		{DIK_COLON, ":"},
+		{DIK_DELETE, "Delete"},
+		{DIK_DOWN, "Down"},
+		{DIK_END, "End"},
+		{DIK_F13, "F13"},
+		{DIK_F14, "F14"},
+		{DIK_F15, "F15"},
+		{DIK_GRAVE, "`"},
+		{DIK_HOME, "Home"},
+		{DIK_INSERT, "Insert"},
+		{DIK_LCONTROL, "CTRL"},
+		{DIK_LEFT, "Left"},
+		{DIK_LMENU, "Alt"},
+		{DIK_LSHIFT, "Shift"},
+		{DIK_NEXT, "Page Down"},
+		{DIK_OEM_102, "OEM 102"},
+		{DIK_PAUSE, "Pause"},
+		{DIK_PRIOR, "Page Up"},
+		{DIK_RCONTROL, "Right CTRL"},
+		{DIK_RETURN, "Enter"},
+		{DIK_RIGHT, "Right"},
+		{DIK_RMENU, "Right Alt"},
+		{DIK_RSHIFT, "Right Shift"},
+		{DIK_SYSRQ, "SYSRQ"},
+		{DIK_TAB, "Tab"},
+		{DIK_UNDERLINE, "_"},
+		{DIK_UNLABELED, "UNLABELED"},
+		{DIK_UP, "Up"},
+		{DIK_YEN, "Yen"}
+	};
+
+	char buf[48] = { 0 };
+	uchar dx_old = _dxkey;
+	_dxkey = dx;
+
+	/* restore default labelsize */
+	labelsize(LS);
+
+	switch (_dxkey) {
+		/* prefer these labels over the localized ones */
+	case DIK_NUMPAD0: label("Num 0"); return;
+	case DIK_NUMPAD1: label("Num 1"); return;
+	case DIK_NUMPAD2: label("Num 2"); return;
+	case DIK_NUMPAD3: label("Num 3"); return;
+	case DIK_NUMPAD4: label("Num 4"); return;
+	case DIK_NUMPAD5: label("Num 5"); return;
+	case DIK_NUMPAD6: label("Num 6"); return;
+	case DIK_NUMPAD7: label("Num 7"); return;
+	case DIK_NUMPAD8: label("Num 8"); return;
+	case DIK_NUMPAD9: label("Num 9"); return;
+	case DIK_DECIMAL: label("Num ."); return;
+	case DIK_NUMPADCOMMA: label("Num ,"); return;
+	case DIK_DIVIDE: label("Num /"); return;
+	case DIK_MULTIPLY: label("Num *"); return;
+	case DIK_ADD: label("Num +"); return;
+	case DIK_SUBTRACT: label("Num -"); return;
+	case DIK_NUMPADEQUALS: label("Num ="); return;
+	case DIK_NUMPADENTER: label("Num Enter"); return;
+	}
+
+	if (_dxkey == 0 || configuration::isIgnoredKey(_dxkey)) {
+		_dxkey = dx_old;
+	}
+
+	if (GetKeyNameTextA(_dxkey << 16, buf, sizeof(buf) - 1) > 0) {
+		fl_font(labelfont(), LS);
+
+		/* lower the labelsize a bit */
+		if (static_cast<int>(fl_width(buf)) > w()) {
+			labelsize(LS - 2);
+			fl_font(labelfont(), labelsize());
+		}
+
+		/* shrink label until it fits the widget */
+		if (static_cast<int>(fl_width(buf)) > w()) {
+			for (size_t i = strlen(buf) - 1; i > 0; --i) {
+				buf[i] = 0;
+				if (fl_width(buf) < w()) {
+					break;
+				}
+			}
+		}
+
+		copy_label(buf);
+	} else {
+		for (int i = 0; i < ARRLEN(keyNames); ++i) {
+			if (_dxkey == keyNames[i].dxkey) {
+				label(keyNames[i].name);
+				return;
+			}
+		}
+
+		_snprintf_s(buf, sizeof(buf) - 1, "0x%X", _dxkey);
+		copy_label(buf);
+	}
 }
 
 PadBox::PadBox(int X, int Y, int H, const char *L, Fl_Align align)
@@ -409,6 +601,7 @@ static void setKey_cb(Fl_Widget *o, void *)
 {
 	kbButton *b = reinterpret_cast<kbButton *>(o);
 	b->label(ui_Press[lang]);
+	b->labelsize(LS);
 	win->but(b);
 	win->redraw();
 }
@@ -459,7 +652,7 @@ static void startWindow(bool restart)
 	}
 	lang = config->language();
 
-	if (lang >= (sizeof(langItems) / sizeof(*langItems)) - 1) {
+	if (lang >= ARRLEN(langItems) - 1) {
 		lang = 0;  /* English */
 	}
 
@@ -477,7 +670,7 @@ static void startWindow(bool restart)
 			g1 = new Fl_Group(32, 36, 698, 512, ui_Settings[lang]);
 			{
 				/* Resolution list */
-				const int szResItems = sizeof(configuration::resList) / sizeof(*configuration::resList);
+				const int szResItems = ARRLEN(configuration::resList);
 				Fl_Menu_Item resItems[szResItems + 1];
 
 				for (int i = 0; i < szResItems; ++i) {
@@ -739,8 +932,14 @@ int main(int argc, wchar_t *argv[])
 		return launchGame();
 	}
 
+	directinput = new DirectInput();
+
+	/* needs to be initialized before we launch our window */
+	directinput->init();
+
 	startWindow(false);
 
+	delete directinput;
 	delete config;
 	return rv;
 }
