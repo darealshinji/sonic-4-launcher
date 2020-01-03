@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2019, djcj <djcj@gmx.de>
+ * Copyright (c) 2019-2020, djcj <djcj@gmx.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,18 @@
  */
 
 #include <Windows.h>
+
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
+#include <Dinput.h>
+
 #include <FL/Fl.H>
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <wchar.h>
 
-#include "keyCodes.h"
 #include "configuration.hpp"
 
 #define CONF_SIZE        53
