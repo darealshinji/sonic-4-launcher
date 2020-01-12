@@ -39,7 +39,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\src\zlib;$(ProjectDir)\src\jpeg;$(ProjectDir)\src\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -50,20 +50,23 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;FL_LIBRARY;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat />
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Lib>
       <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(ProjectDir)\src\src\fl_images_core.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_BMP_Image.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon2.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_GIF_Image.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_JPEG_Image.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_images_core.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_BMP_Image.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon2.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_GIF_Image.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_JPEG_Image.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_PNG_Image.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_PNM_Image.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_PNM_Image.cxx" />-->
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

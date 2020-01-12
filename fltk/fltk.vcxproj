@@ -39,7 +39,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\src\zlib;$(ProjectDir)\src\jpeg;$(ProjectDir)\src\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -50,6 +50,9 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;FL_LIBRARY;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat />
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Lib>
       <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
@@ -57,109 +60,109 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="$(ProjectDir)\src\src\Fl.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Adjuster.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Adjuster.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Bitmap.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Browser.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Browser_.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Browser_load.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Browser.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Browser_.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Browser_load.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Box.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Button.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Chart.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Check_Browser.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Chart.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Check_Browser.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Check_Button.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Choice.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Clock.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Color_Chooser.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Copy_Surface.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Counter.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Clock.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Color_Chooser.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Copy_Surface.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Counter.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Device.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Dial.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog_Dox.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Dial.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog_Dox.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Double_Window.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Browser.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Chooser.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Chooser2.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_File_Input.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Browser.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Chooser.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Chooser2.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Input.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Group.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Help_View.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Help_View.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Image.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Image_Surface.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Image_Surface.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Input.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Input_.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Light_Button.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_Bar.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_Bar.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_Button.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_Window.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_add.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_global.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Multi_Label.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Native_File_Chooser.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Menu_global.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Multi_Label.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Native_File_Chooser.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Overlay_Window.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Pack.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Paged_Device.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Pack.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Paged_Device.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Pixmap.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Positioner.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_PostScript.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Printer.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Positioner.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_PostScript.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Printer.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Preferences.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Progress.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Progress.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Repeat_Button.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Return_Button.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Roller.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Round_Button.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Scroll.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Scrollbar.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Roller.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Round_Button.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Scroll.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Scrollbar.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Shared_Image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Single_Window.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Slider.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Table.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Table_Row.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Slider.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Table.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Table_Row.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Tabs.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Buffer.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Display.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Editor.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Tile.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Buffer.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Display.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Text_Editor.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Tile.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Tiled_Image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Tooltip.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Tree.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Item_Array.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Item.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Prefs.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Valuator.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Input.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Output.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Slider.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Tree.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Item_Array.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Item.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Tree_Prefs.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Valuator.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Input.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Output.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Value_Slider.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Widget.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Window.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Window_fullscreen.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Window_hotspot.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Window_iconize.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Window_shape.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_Wizard.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Wizard.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_XBM_Image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_XPM_Image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_abort.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_add_idle.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_arg.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_add_idle.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_arg.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_compose.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_display.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_get_key.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_display.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_get_key.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_get_system_colors.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_grab.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\Fl_lock.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_own_colormap.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_visual.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\Fl_x.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\filename_absolute.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\filename_expand.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\filename_ext.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\filename_isdir.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_own_colormap.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_visual.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_x.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\filename_absolute.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\filename_expand.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\filename_ext.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\filename_isdir.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\filename_list.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\filename_match.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\filename_setext.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\filename_setext.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_arc.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_arci.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_ask.cxx" />
@@ -167,40 +170,40 @@
     <ClCompile Include="$(ProjectDir)\src\src\fl_color.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_cursor.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_curve.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_diamond_box.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_diamond_box.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_dnd.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_draw.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_draw_image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_draw_pixmap.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_engraved_label.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_file_dir.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_engraved_label.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_file_dir.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_font.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_gleam.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_gtk.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_labeltype.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_line_style.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_open_uri.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_oval_box.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_open_uri.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_oval_box.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_overlay.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_overlay_visual.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_plastic.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_read_image.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_rect.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_round_box.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_rounded_box.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_set_font.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_set_fonts.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_scroll_area.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_shadow_box.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_rounded_box.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_set_font.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_set_fonts.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_scroll_area.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_shadow_box.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_shortcut.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_show_colormap.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_show_colormap.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\fl_symbols.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_vertex.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\ps_image.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\ps_image.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\screen_xywh.cxx" />
     <ClCompile Include="$(ProjectDir)\src\src\fl_utf8.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_encoding_latin1.cxx" />
-    <ClCompile Include="$(ProjectDir)\src\src\fl_encoding_mac_roman.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_encoding_latin1.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_encoding_mac_roman.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\flstring.c">
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
