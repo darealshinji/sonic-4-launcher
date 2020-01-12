@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#include <Windows.h>
+#include <windows.h>
 
 #ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0800
 #endif
-#include <Dinput.h>
+#include <dinput.h>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
@@ -46,14 +46,21 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+#ifdef __GNUC__
 #include "images.h"
+#define WMAIN wmain
+#else
+#include "../Obj/images.h"
+#define WMAIN main
+#endif
+
 #include "lang.h"
 #include "configuration.hpp"
 
 // https://blogs.msdn.microsoft.com/oldnewthing/20041025-00/?p=37483
-// http://stackoverflow.com/questions/1749972/determine-the-current-hinstance
+// https://stackoverflow.com/a/557859
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
+#define HINST_THISCOMPONENT  reinterpret_cast<HINSTANCE>(&__ImageBase)
 
 #define MAX_PATH_LENGTH      4096
 #define STRINGIFY(x)         #x
@@ -73,13 +80,14 @@ typedef struct {
 class DirectInput
 {
 private:
-	IDirectInput8 *m_directInput;
-	IDirectInputDevice8 *m_keyboard;
+	IDirectInput8 *m_directInput = NULL;
+	IDirectInputDevice8 *m_keyboard = NULL;
 
 public:
-	unsigned char m_keyboardState[256];
+	unsigned char m_keyboardState[256] = { 0 };
 
-	DirectInput();
+	DirectInput() {}
+
 	bool init();
 	bool ReadKeyboard();
 };
@@ -87,8 +95,8 @@ public:
 class MyChoice : public Fl_Choice
 {
 private:
-	int _prev;
-	Fl_Menu_Item *_menu;
+	int _prev = 0;
+	Fl_Menu_Item *_menu = NULL;
 
 	void prev(int v) { _prev = v; }
 	int prev() { return _prev; }
@@ -111,11 +119,11 @@ public:
 class kbButton : public Fl_Button
 {
 private:
-	uchar _dxkey;
+	uchar _dxkey = 0;
 
 public:
 	kbButton(int X, int Y, int W, int H, const char *L = NULL)
-		: Fl_Button(X, Y, W, H, L), _dxkey(0)
+		: Fl_Button(X, Y, W, H, L)
 	{
 		labelsize(LS);
 		clear_visible_focus();
@@ -138,11 +146,11 @@ public:
 class MyWindow : public Fl_Double_Window
 {
 private:
-	kbButton *_but;
+	kbButton *_but = NULL;
 
 public:
 	MyWindow(int W, int H, const char *L = NULL)
-		: Fl_Double_Window(W, H, L), _but(NULL)
+		: Fl_Double_Window(W, H, L)
 	{}
 
 	void but(kbButton *o) { _but = o; }
@@ -179,7 +187,7 @@ IMAGE(pad_controls_v02);
 #undef IMAGE
 
 static int rv = 0;
-static int lang = 0;
+static unsigned int lang = 0;
 static int save_x = 0, save_y = 0;
 
 static wchar_t moduleRootDir[MAX_PATH_LENGTH];
@@ -198,12 +206,28 @@ static const Fl_Menu_Item langItems[] =
 };
 
 
-DirectInput::DirectInput() {
+// https://www.daemonology.net/blog/2008-06-05-faster-utf8-strlen.html
+static void strip_last_utf8_char(char *s)
+{
+	int i = 0;
+	int last_char = 0;
+
+	/* bytes 0xC0 through 0xFF are the first byte
+	 * of a UTF-8 multi-byte character */
+	while (s[i]) {
+		if ((s[i] & 0xC0) != 0x80) {
+			last_char = i;
+		}
+		i++;
+	}
+
+	s[last_char] = 0;
 }
 
 bool DirectInput::init()
 {
-	if (DirectInput8Create(HINST_THISCOMPONENT, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL) != DI_OK) {
+	if (DirectInput8Create(HINST_THISCOMPONENT, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID *>(&m_directInput), NULL) != DI_OK)
+	{
 		return false;
 	}
 
@@ -224,9 +248,9 @@ bool DirectInput::init()
 
 bool DirectInput::ReadKeyboard()
 {
-	memset(m_keyboardState, 0, 256);
+	memset(m_keyboardState, 0, sizeof(m_keyboardState));
 
-	HRESULT res = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)m_keyboardState);
+	HRESULT res = m_keyboard->GetDeviceState(sizeof(m_keyboardState), reinterpret_cast<LPVOID>(m_keyboardState));
 
 	if (res != DI_OK) {
 		/* If the keyboard lost focus or was not acquired then try to get control back. */
@@ -251,7 +275,7 @@ int MyWindow::handle(int event)
 					continue;
 				}
 
-				for (short i = 0; i < 256; ++i) {
+				for (unsigned int i = 0; i < sizeof(directinput->m_keyboardState); ++i) {
 					if ((directinput->m_keyboardState[i] & 128) == 0) {
 						continue;
 					}
@@ -316,12 +340,12 @@ void kbButton::dxkey(uchar dx)
 		{DIK_YEN, "Yen"}
 	};
 
-	char buf[48] = { 0 };
+	char buf[80] = { 0 };
 	uchar dx_old = _dxkey;
 	_dxkey = dx;
 
 	/* restore default labelsize */
-	labelsize(LS);
+	//labelsize(LS);
 
 	switch (_dxkey) {
 		/* prefer these labels over the localized ones */
@@ -352,17 +376,35 @@ void kbButton::dxkey(uchar dx)
 	if (GetKeyNameTextA(_dxkey << 16, buf, sizeof(buf) - 1) > 0) {
 		fl_font(labelfont(), LS);
 
+		/* test multibyte utf8 character stripping */
+		/*
+		snprintf(buf, 63, "%s",
+			// ÀàÁáÂâÄäÈèÉéÊêÌìÍíÎîÒòÓóÔôÖöÙùÚúÛûÜü
+			"\xC3\x80\xC3\xA0\xC3\x81\xC3\xA1\xC3\x82\xC3\xA2\xC3\x84\xC3\xA4\xC3\x88"
+			"\xC3\xA8\xC3\x89\xC3\xA9\xC3\x8A\xC3\xAA\xC3\x8C\xC3\xAC\xC3\x8D\xC3\xAD"
+			"\xC3\x8E\xC3\xAE\xC3\x92\xC3\xB2\xC3\x93\xC3\xB3\xC3\x94\xC3\xB4\xC3\x96"
+			"\xC3\xB6\xC3\x99\xC3\xB9\xC3\x9A\xC3\xBA\xC3\x9B\xC3\xBB\xC3\x9C\xC3\xBC"
+
+			// 今日はこんにちは今日はこんにちは
+			//"\xE4\xBB\x8A\xE6\x97\xA5\xE3\x81\xAF\xE3\x81\x93\xE3\x82\x93\xE3\x81\xAB"
+			//"\xE3\x81\xA1\xE3\x81\xAF\xE4\xBB\x8A\xE6\x97\xA5\xE3\x81\xAF\xE3\x81\x93"
+			//"\xE3\x82\x93\xE3\x81\xAB\xE3\x81\xA1\xE3\x81\xAF"
+		);
+		*/
+
+		int limit = w() - 2;
+
 		/* lower the labelsize a bit */
-		if (static_cast<int>(fl_width(buf)) > w()) {
-			labelsize(LS - 2);
-			fl_font(labelfont(), labelsize());
-		}
+		//if (static_cast<int>(fl_width(buf)) > limit) {
+		//	labelsize(LS - 2);
+		//	fl_font(labelfont(), labelsize());
+		//}
 
 		/* shrink label until it fits the widget */
-		if (static_cast<int>(fl_width(buf)) > w()) {
-			for (size_t i = strlen(buf) - 1; i > 0; --i) {
-				buf[i] = 0;
-				if (fl_width(buf) < w()) {
+		if (static_cast<int>(fl_width(buf)) > limit) {
+			while (buf[0] != 0) {
+				strip_last_utf8_char(buf);
+				if (static_cast<int>(fl_width(buf)) <= limit) {
 					break;
 				}
 			}
@@ -370,7 +412,7 @@ void kbButton::dxkey(uchar dx)
 
 		copy_label(buf);
 	} else {
-		for (int i = 0; i < ARRLEN(keyNames); ++i) {
+		for (unsigned int i = 0; i < ARRLEN(keyNames); ++i) {
 			if (_dxkey == keyNames[i].dxkey) {
 				label(keyNames[i].name);
 				return;
@@ -495,7 +537,7 @@ static int launchGame(void)
 {
 	const char *title = "Error: Sonic_vis.exe";
 	wchar_t command[MAX_PATH_LENGTH];
-	STARTUPINFO si;
+	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
 
 	wcscpy_s(command, MAX_PATH_LENGTH - 1, moduleRootDir);
@@ -510,19 +552,19 @@ static int launchGame(void)
 		return 1;
 	}
 
-	rv = WaitForSingleObject(pi.hProcess, INFINITE);
+	DWORD wait = WaitForSingleObject(pi.hProcess, INFINITE);
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 
-	if (rv == WAIT_ABANDONED) {
+	if (wait == WAIT_ABANDONED) {
 		MessageBoxA(0, "Process abandoned.", title, MB_ICONERROR|MB_OK);
-	} else if (rv == WAIT_TIMEOUT) {
+	} else if (wait == WAIT_TIMEOUT) {
 		MessageBoxA(0, "Process time-out error.", title, MB_ICONERROR|MB_OK);
-	} else if (rv == WAIT_FAILED) {
+	} else if (wait == WAIT_FAILED) {
 		MessageBoxA(0, "Process failed", title, MB_ICONERROR|MB_OK);
 	}
 
-	return rv;
+	return wait;
 }
 
 static void setResolution_cb(Fl_Widget *o, void *)
@@ -599,9 +641,9 @@ static void setDefaultKeys_cb(Fl_Widget *, void *)
 
 static void setKey_cb(Fl_Widget *o, void *)
 {
-	kbButton *b = reinterpret_cast<kbButton *>(o);
+	kbButton *b = dynamic_cast<kbButton *>(o);
 	b->label(ui_Press[lang]);
-	b->labelsize(LS);
+	//b->labelsize(LS);
 	win->but(b);
 	win->redraw();
 }
@@ -670,13 +712,12 @@ static void startWindow(bool restart)
 			g1 = new Fl_Group(32, 36, 698, 512, ui_Settings[lang]);
 			{
 				/* Resolution list */
-				const int szResItems = ARRLEN(configuration::resList);
-				Fl_Menu_Item resItems[szResItems + 1];
+				Fl_Menu_Item resItems[SZRESLIST + 1];
 
-				for (int i = 0; i < szResItems; ++i) {
-					resItems[i] = MENUITEM(configuration::resList[i].l);
+				for (int i = 0; i < SZRESLIST; ++i) {
+					resItems[i] = MENUITEM(configuration::getReslistL(i));
 				}
-				resItems[szResItems] = {0};
+				resItems[SZRESLIST] = {0};
 
 				/* Display list */
 				for (int i = 0; i < sc; ++i) {
@@ -914,7 +955,7 @@ static void startWindow(bool restart)
 	delete[] devLabels;
 }
 
-int main(int argc, wchar_t *argv[])
+int WMAIN(int argc, wchar_t *argv[])
 {
 	if (!getModuleRootDir()) {
 		MessageBoxA(0, "Failed calling GetModuleFileName()", windowTitle, MB_ICONERROR|MB_OK);

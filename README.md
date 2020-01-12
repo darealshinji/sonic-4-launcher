@@ -9,7 +9,9 @@ following Unix shell command: `tail -c+178689 SonicLauncher.exe > SonicLauncher.
 
 How to build
 ------------
-Checkout the submodule with `git submodule init && git submodule update` and open `SonicLauncher.sln`.
+Checkout the submodule with `git submodule init && git submodule update`.
+Then open `SonicLauncher.sln` in Visual Studio 2019 or use the Makfile if you want to
+build with MinGW/GCC.
 
 License
 -------

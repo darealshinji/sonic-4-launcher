@@ -25,6 +25,8 @@
 #include <stdint.h>
 #include <wchar.h>
 
+#define SZRESLIST 12
+
 typedef unsigned char uchar;
 
 typedef struct {
@@ -43,35 +45,33 @@ public:
 	};
 
 	/* hardcoded resolution list */
-	static const res_t resList[12];
+	static const res_t resList[SZRESLIST];
 
 private:
-	const wchar_t *_confFile;
-	uchar _screenCount;
-	size_t _resN;
+	const wchar_t *_confFile = NULL;
 
-	uint16_t _resX;
-	uint16_t _resY;
+	uchar _screenCount = 0;
+	size_t _resN = 0;
+	uint16_t _resW = 0;
+	uint16_t _resH = 0;
 
-	uchar _fullscreen;
-	uchar _language;
-	uchar _controls;
-	uchar _vibra;
-	uchar _display;
-	uchar _keyLeft;
-	uchar _keyRight;
-	uchar _keyUp;
-	uchar _keyDown;
-	uchar _keyA;
-	uchar _keyB;
-	uchar _keyX;
-	uchar _keyY;
-	uchar _keyStart;
+	uchar _fullscreen = 0;
+	uchar _language = 0;
+	uchar _controls = 0;
+	uchar _vibra = 0;
+	uchar _display = 0;
+	uchar _keyLeft = 0;
+	uchar _keyRight = 0;
+	uchar _keyUp = 0;
+	uchar _keyDown = 0;
+	uchar _keyA = 0;
+	uchar _keyB = 0;
+	uchar _keyX = 0;
+	uchar _keyY = 0;
+	uchar _keyStart = 0;
 
 public:
 	configuration(const wchar_t *filename);
-
-	static bool isIgnoredKey(uchar dx);
 
 	bool loadConfig();
 	void setDefaultKeys();
@@ -79,45 +79,45 @@ public:
 	bool saveConfig();
 
 	uchar screenCount() { return _screenCount; }
-	uint16_t resXN(int n);
-	uint16_t resYN(int n);
-	void resN(size_t n);
-	size_t resN() { return _resN; }
+	static bool isIgnoredKey(uchar dx);
+	static const char *getReslistL(int n);
 
 	/* get config values */
-	uint16_t resX()      { return _resX; }
-	uint16_t resY()      { return _resY; }
+	size_t resN()      { return _resN; }
+	uint16_t resW()    { return _resW; }
+	uint16_t resH()    { return _resH; }
 	uchar fullscreen() { return _fullscreen; }
 	uchar language()   { return _language; }
 	uchar controls()   { return _controls; }
 	uchar vibra()      { return _vibra; }
 	uchar display()    { return _display; }
-	uchar keyLeft()   { return _keyLeft; }
-	uchar keyRight()  { return _keyRight; }
-	uchar keyUp()     { return _keyUp; }
-	uchar keyDown()   { return _keyDown; }
-	uchar keyA()      { return _keyA; }
-	uchar keyB()      { return _keyB; }
-	uchar keyX()      { return _keyX; }
-	uchar keyY()      { return _keyY; }
-	uchar keyStart()  { return _keyStart; }
+	uchar keyLeft()    { return _keyLeft; }
+	uchar keyRight()   { return _keyRight; }
+	uchar keyUp()      { return _keyUp; }
+	uchar keyDown()    { return _keyDown; }
+	uchar keyA()       { return _keyA; }
+	uchar keyB()       { return _keyB; }
+	uchar keyX()       { return _keyX; }
+	uchar keyY()       { return _keyY; }
+	uchar keyStart()   { return _keyStart; }
 
 	/* set config values */
-	void resX(uint16_t n)      { _resX = n; }
-	void resY(uint16_t n)      { _resY = n; }
+	void resN(size_t n);
+	void resW(uint16_t n)    { _resW = n; }
+	void resH(uint16_t n)    { _resH = n; }
 	void fullscreen(uchar n) { _fullscreen = n; }
 	void language(uchar n)   { _language = n; }
 	void controls(uchar n)   { _controls = n; }
 	void vibra(uchar n)      { _vibra = n; }
 	void display(uchar n)    { _display = n; }
-	void keyLeft(uchar n)   { _keyLeft = n; }
-	void keyRight(uchar n)  { _keyRight = n; }
-	void keyUp(uchar n)     { _keyUp = n; }
-	void keyDown(uchar n)   { _keyDown = n; }
-	void keyA(uchar n)      { _keyA = n; }
-	void keyB(uchar n)      { _keyB = n; }
-	void keyX(uchar n)      { _keyX = n; }
-	void keyY(uchar n)      { _keyY = n; }
-	void keyStart(uchar n)  { _keyStart = n; }
+	void keyLeft(uchar n)    { _keyLeft = n; }
+	void keyRight(uchar n)   { _keyRight = n; }
+	void keyUp(uchar n)      { _keyUp = n; }
+	void keyDown(uchar n)    { _keyDown = n; }
+	void keyA(uchar n)       { _keyA = n; }
+	void keyB(uchar n)       { _keyB = n; }
+	void keyX(uchar n)       { _keyX = n; }
+	void keyY(uchar n)       { _keyY = n; }
+	void keyStart(uchar n)   { _keyStart = n; }
 };
 

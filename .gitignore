@@ -1,4 +1,7 @@
 /images.h
+*.exe
+*.o
+*.a
 
 
 ## Ignore Visual Studio temporary files, build results, and

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#include <Windows.h>
+#include <windows.h>
 
 #ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0800
 #endif
-#include <Dinput.h>
+#include <dinput.h>
 
 #include <FL/Fl.H>
 #include <ctype.h>
@@ -38,12 +38,10 @@
 #include "configuration.hpp"
 
 #define CONF_SIZE        53
-#define MAX_PATH_LENGTH  2048 * sizeof(wchar_t)
 #define TO_UINT32(x)     static_cast<uint32_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8 | (0xFF & x[2]) << 16 | (0xFF & x[3]) << 24))
-#define ARRLEN(x)        (sizeof(x) / sizeof(*x))
 
 
-const res_t configuration::resList[] =
+const res_t configuration::resList[SZRESLIST] =
 {
 	{640, 480, "640x480"},
 	{800, 600, "800x600"},
@@ -60,27 +58,26 @@ const res_t configuration::resList[] =
 };
 
 
-uint16_t configuration::resXN(int n)
+const char *configuration::getReslistL(int n)
 {
-	return (n < ARRLEN(configuration::resList)) ? resList[n].w : resList[0].w;
-}
-
-uint16_t configuration::resYN(int n)
-{
-	return (n < ARRLEN(configuration::resList)) ? resList[n].h : resList[0].h;
+	if (n <= 0) {
+		return resList[0].l;
+	} else if (n >= SZRESLIST) {
+		return resList[SZRESLIST - 1].l;
+	}
+	return resList[n].l;
 }
 
 void configuration::resN(size_t n)
 {
-	if (n < ARRLEN(configuration::resList)) {
-		_resX = resXN(n);
-		_resY = resYN(n);
-		_resN = n;
-	} else {
-		_resX = resXN(0);
-		_resY = resYN(0);
-		_resN = 0;
+	if (n <= 0) {
+		n = 0;
+	} else if (n >= SZRESLIST) {
+		n = SZRESLIST - 1;
 	}
+	_resW = resList[n].w;
+	_resH = resList[n].h;
+	_resN = n;
 }
 
 bool configuration::isIgnoredKey(uchar dx)
@@ -99,12 +96,16 @@ bool configuration::isIgnoredKey(uchar dx)
 	case DIK_MEDIASTOP:
 	case DIK_MUTE:
 	case DIK_MYCOMPUTER:
+#ifdef DIK_NEXTTRACK
 	case DIK_NEXTTRACK:
+#endif
 	case DIK_NOCONVERT:
 	case DIK_NUMLOCK:
 	case DIK_PLAYPAUSE:
 	case DIK_POWER:
+#ifdef DIK_PREVTRACK
 	case DIK_PREVTRACK:
+#endif
 	case DIK_RWIN:
 	case DIK_SCROLL:
 	case DIK_SLEEP:
@@ -130,8 +131,9 @@ bool configuration::loadConfig(void)
 	FILE *fp = NULL;
 	unsigned char buf[CONF_SIZE];
 	unsigned char *p = buf;
+	bool found = false;
 
-	if (_wfopen_s(&fp, _confFile, L"rb") != NULL) {
+	if (_wfopen_s(&fp, _confFile, L"rb") != 0) {
 		return false;
 	}
 
@@ -147,20 +149,23 @@ bool configuration::loadConfig(void)
 	}
 	p += 4;
 
-	_resX = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
+	_resW = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
 	p += 2;
-	_resY = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
+	_resH = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
 	p += 2;
 
-	for (int i = 0; i < ARRLEN(configuration::resList); ++i) {
-		if (_resX == resList[i].w && _resY == resList[i].h) {
+	for (int i = 0; i < SZRESLIST; ++i) {
+		if (_resW == resList[i].w && _resH == resList[i].h) {
 			_resN = i;
+			found = true;
 			break;
-		} else if (resList[i].w == 0) {
-			_resX = resList[0].w;
-			_resY = resList[0].h;
-			_resN = 0;
 		}
+	}
+
+	if (!found) {
+		_resW = resList[0].w;
+		_resH = resList[0].h;
+		_resN = 0;
 	}
 
 	_fullscreen = (p[0] == 0) ? 0 : 1;
@@ -208,8 +213,8 @@ void configuration::setDefaultKeys(void)
 void configuration::loadDefaultConfig(void)
 {
 	_resN = 0;
-	_resX = resList[_resN].w;
-	_resY = resList[_resN].h;
+	_resW = resList[_resN].w;
+	_resH = resList[_resN].h;
 	_fullscreen = 0;
 	_language = 0;  /* English */
 	_controls = KEYBOARD_CTRLS;
@@ -222,7 +227,7 @@ bool configuration::saveConfig(void)
 {
 	FILE *fp = NULL;
 
-	if (_wfopen_s(&fp, _confFile, L"wb") != NULL) {
+	if (_wfopen_s(&fp, _confFile, L"wb") != 0) {
 		return false;
 	}
 
@@ -232,10 +237,10 @@ bool configuration::saveConfig(void)
 	putc(0x32, fp);
 	putc(0x01, fp);
 
-	putc(static_cast<uchar>(_resX), fp);
-	putc(static_cast<uchar>(_resX >> 8), fp);
-	putc(static_cast<uchar>(_resY), fp);
-	putc(static_cast<uchar>(_resY >> 8), fp);
+	putc(static_cast<uchar>(_resW), fp);
+	putc(static_cast<uchar>(_resW >> 8), fp);
+	putc(static_cast<uchar>(_resH), fp);
+	putc(static_cast<uchar>(_resH >> 8), fp);
 
 	putc(_fullscreen, fp);
 	putc(_language, fp);
@@ -268,25 +273,7 @@ bool configuration::saveConfig(void)
 	return true;
 }
 
-configuration::configuration(const wchar_t *filename) :
-	_screenCount(0),
-	_resN(0),
-	_resX(0),
-	_resY(0),
-	_fullscreen(0),
-	_language(0),
-	_controls(0),
-	_vibra(0),
-	_display(0),
-	_keyLeft(0),
-	_keyRight(0),
-	_keyUp(0),
-	_keyDown(0),
-	_keyA(0),
-	_keyB(0),
-	_keyX(0),
-	_keyY(0),
-	_keyStart(0)
+configuration::configuration(const wchar_t *filename)
 {
 	_confFile = filename;
 	_screenCount = static_cast<uchar>(Fl::screen_count());
