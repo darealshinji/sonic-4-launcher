@@ -25,8 +25,8 @@ Select|Wählen|Seleccionar|Sélectionnez|Selezionare|決定|Wybierz
 Back|Zurück|Volver|Retour|Indietro|戻る|Do tyłu
 Keyboard|Tastatur|Teclado|Clavier|Tastiera|キーボード|Klawiatura
 Gamepad|Gamepad|Gamepad|Gamepad|Gamepad|ゲームパッド|Gamepad
-Score Attack / Time Attack|Modus: Punktangriff / Zeitangriff|Modo: Por puntos / Contrarreloj|Chasse aux points / Contre la montre|Attacco al tempo / Attacco al punteggio|スコアアタック / タイムアタック|Wynik / Czas
-Press!|Drücken!|¡Pulsa!|Presse !|Premi!|を押し!|Nacisnij
+Score Attack / Time Attack|Punktangriff / Zeitangriff|Por puntos / Contrarreloj|Chasse aux points / Contre la montre|Attacco al tempo / Attacco al punteggio|スコアアタック / タイムアタック|Wynik / Czas
+Press!|Drücken!|¡Pulsa!|Presse!|Premi!|を押し!|Nacisnij!
 Reset to Default Settings|Auf Standard zurücksetzen|Volver a configuración inicial|Réinitialiser|Ripristina predefinito|デフォルトにリセット|Reset do ustawień domyślnych
 Configuration|Konfiguration|Configuración|Configuration|Configurazione|コンフィギュレーション|Konfiguracja
 Configuration saved.|Einstellungen gespeichert.|Configuración guardada.|Configuration sauvegardée.|Configurazione salvata.|設定を保存しました.|Konfiguracja zapisana.
