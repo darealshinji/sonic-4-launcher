@@ -1,8 +1,16 @@
 # GCC/MinGW Makefile
 
+ifeq (V,1)
+Q =
+vecho =
+else
+Q = @
+vecho = @echo "  $@"; 
+endif
+
 CFLAGS = -O3 -Wall -I. -I./fltk -I./fltk/src -I./fltk/src/png -I./fltk/src/zlib -DNDEBUG -ffunction-sections -fdata-sections
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = -Wl,--gc-sections -municode -mwindows -lcomctl32 -ldinput8 -ldxguid -lole32 -static
+LDFLAGS = -Wl,--gc-sections -mwindows -lcomctl32 -ldinput8 -ldxguid -lole32 -static
 
 MINGW_PREFIX = i686-w64-mingw32-
 MINGW_THREADS = -win32
@@ -17,7 +25,7 @@ XXD = xxd
 
 BIN = SonicLauncher.exe
 BIN_SRCFILES = configuration.cpp main.cpp
-BIN_SRCS = $(addprefix $(CURDIR)/src/, $(BIN_SRCFILES))
+BIN_SRCS = $(addprefix src/, $(BIN_SRCFILES))
 BIN_OBJS = $(addsuffix .o, $(BIN_SRCS))
 
 FLTK = libfltk.a
@@ -39,23 +47,23 @@ FLTK_SRCFILES = Fl.cxx Fl_Bitmap.cxx Fl_Browser_load.cxx Fl_Box.cxx Fl_Button.cx
 # Fl_visual.cxx Fl_x.cxx filename_absolute.cxx filename_expand.cxx filename_ext.cxx filename_isdir.cxx filename_setext.cxx fl_diamond_box.cxx
 # fl_engraved_label.cxx fl_file_dir.cxx fl_open_uri.cxx fl_oval_box.cxx fl_rounded_box.cxx fl_set_font.cxx fl_set_fonts.cxx fl_scroll_area.cxx fl_shadow_box.cxx
 # fl_show_colormap.cxx ps_image.cxx fl_encoding_latin1.cxx fl_encoding_mac_roman.cxx
-FLTK_SRCS = $(addprefix $(CURDIR)/fltk/src/src/, $(FLTK_SRCFILES))
+FLTK_SRCS = $(addprefix fltk/src/src/, $(FLTK_SRCFILES))
 FLTK_OBJS = $(addsuffix .o, $(FLTK_SRCS))
 
 FLTK_IMAGES = libfltk_images.a
 FLTK_IMAGES_SRCFILES = Fl_PNG_Image.cxx
 #fl_images_core.cxx Fl_BMP_Image.cxx Fl_File_Icon2.cxx Fl_GIF_Image.cxx Fl_Help_Dialog.cxx Fl_JPEG_Image.cxx Fl_PNM_Image.cxx
-FLTK_IMAGES_SRCS = $(addprefix $(CURDIR)/fltk/src/src/, $(FLTK_IMAGES_SRCFILES))
+FLTK_IMAGES_SRCS = $(addprefix fltk/src/src/, $(FLTK_IMAGES_SRCFILES))
 FLTK_IMAGES_OBJS = $(addsuffix .o, $(FLTK_IMAGES_SRCS))
 
 FLTK_PNG = libpng.a
 FLTK_PNG_SRCFILES = png.c pngerror.c pngget.c pngmem.c pngpread.c pngread.c pngrio.c pngrtran.c pngrutil.c pngset.c pngtrans.c pngwio.c pngwrite.c pngwtran.c pngwutil.c
-FLTK_PNG_SRCS = $(addprefix $(CURDIR)/fltk/src/png/, $(FLTK_PNG_SRCFILES))
+FLTK_PNG_SRCS = $(addprefix fltk/src/png/, $(FLTK_PNG_SRCFILES))
 FLTK_PNG_OBJS = $(addsuffix .o, $(FLTK_PNG_SRCS))
 
 FLTK_ZLIB = libz.a
 FLTK_ZLIB_SRCFILES = adler32.c compress.c crc32.c deflate.c inflate.c infback.c inftrees.c inffast.c trees.c uncompr.c zutil.c
-FLTK_ZLIB_SRCS = $(addprefix $(CURDIR)/fltk/src/zlib/, $(FLTK_ZLIB_SRCFILES))
+FLTK_ZLIB_SRCS = $(addprefix fltk/src/zlib/, $(FLTK_ZLIB_SRCFILES))
 FLTK_ZLIB_OBJS = $(addsuffix .o, $(FLTK_ZLIB_SRCS))
 
 
@@ -77,38 +85,37 @@ IMAGES = arrow_01.png arrow_02.png arrow_03.png arrow_04.png back1.png back2.png
  button_01.png button_02.png button_03.png button_04.png button_05.png icon.png pad_controls_v02.png
 
 images.h:
-	cd images; $(foreach img,$(IMAGES),$(XXD) -i $(img) >> ../images.h; )
+	$(vecho)cd images; $(foreach img,$(IMAGES),$(XXD) -i $(img) >> ../images.h; )
 
 $(BIN_OBJS): images.h
-$(BIN_OBJS): CXXFLAGS+=-municode -mwindows
 
 $(BIN): $(FLTK_ZLIB) $(FLTK_PNG) $(FLTK_IMAGES) $(FLTK) $(BIN_OBJS) SonicLauncher.rc.o
-	$(CXX) -o $@ $(BIN_OBJS) SonicLauncher.rc.o $(FLTK_IMAGES) $(FLTK) $(FLTK_PNG) $(FLTK_ZLIB) $(LDFLAGS)
-	$(STRIP) $@
+	$(vecho)$(CXX) -o $@ $(BIN_OBJS) SonicLauncher.rc.o $(FLTK_IMAGES) $(FLTK) $(FLTK_PNG) $(FLTK_ZLIB) $(LDFLAGS)
+	$(Q)$(STRIP) $@
 
-$(FLTK): CXXFLAGS+=-DFL_LIBRARY
+$(FLTK): CXXFLAGS+=-DFL_LIBRARY -fno-strict-aliasing
 $(FLTK): $(FLTK_OBJS)
-	$(AR) cru $@ $^ && $(RANLIB) $@
+	$(vecho)$(AR) cr $@ $^ && $(RANLIB) $@
 
 $(FLTK_IMAGES): CXXFLAGS+=-DFL_LIBRARY
 $(FLTK_IMAGES): $(FLTK_IMAGES_OBJS)
-	$(AR) cru $@ $^ && $(RANLIB) $@
+	$(vecho)$(AR) cr $@ $^ && $(RANLIB) $@
 
 $(FLTK_PNG): $(FLTK_PNG_OBJS)
-	$(AR) cru $@ $^ && $(RANLIB) $@
+	$(vecho)$(AR) cr $@ $^ && $(RANLIB) $@
 
 $(FLTK_ZLIB): $(FLTK_ZLIB_OBJS)
-	$(AR) cru $@ $^ && $(RANLIB) $@
+	$(vecho)$(AR) cr $@ $^ && $(RANLIB) $@
 
 %.rc.o:
-	$(WINDRES) -i $(basename $@) -o $@
+	$(vecho)$(WINDRES) -i $(basename $@) -o $@
 
 %.c.o:
-	$(CC) $(CFLAGS) -c $(basename $@) -o $@
+	$(vecho)$(CC) $(CFLAGS) -c $(basename $@) -o $@
 
 %.cxx.o:
-	$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
+	$(vecho)$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
 
 %.cpp.o:
-	$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
+	$(vecho)$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
 
