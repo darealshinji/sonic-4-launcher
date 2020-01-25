@@ -1,3 +1,9 @@
 [submodule "fltk/src"]
 	path = fltk/src
 	url = https://github.com/fltk/fltk
+[submodule "fltk/libpng"]
+	path = fltk/libpng
+	url = https://github.com/glennrp/libpng
+[submodule "fltk/zlib"]
+	path = fltk/zlib
+	url = https://github.com/madler/zlib

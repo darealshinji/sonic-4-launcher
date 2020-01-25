@@ -27,6 +27,19 @@
 
 #define SZRESLIST 12
 
+#define KEYBOARD_CTRLS 0
+#define GAMEPAD_CTRLS 1
+
+#define KEYUP 1
+#define KEYDOWN 2
+#define KEYLEFT 3
+#define KEYRIGHT 4
+#define KEYA 5
+#define KEYB 6
+#define KEYX 7
+#define KEYY 8
+#define KEYSTART 9
+
 typedef unsigned char uchar;
 
 typedef struct {
@@ -39,11 +52,6 @@ typedef struct {
 class configuration
 {
 public:
-	enum {
-		KEYBOARD_CTRLS = 0,
-		GAMEPAD_CTRLS = 1
-	};
-
 	/* hardcoded resolution list */
 	static const res_t resList[SZRESLIST];
 
@@ -91,15 +99,7 @@ public:
 	uchar controls()   { return _controls; }
 	uchar vibra()      { return _vibra; }
 	uchar display()    { return _display; }
-	uchar keyLeft()    { return _keyLeft; }
-	uchar keyRight()   { return _keyRight; }
-	uchar keyUp()      { return _keyUp; }
-	uchar keyDown()    { return _keyDown; }
-	uchar keyA()       { return _keyA; }
-	uchar keyB()       { return _keyB; }
-	uchar keyX()       { return _keyX; }
-	uchar keyY()       { return _keyY; }
-	uchar keyStart()   { return _keyStart; }
+	uchar key(int type);
 
 	/* set config values */
 	void resN(size_t n);
@@ -110,14 +110,6 @@ public:
 	void controls(uchar n)   { _controls = n; }
 	void vibra(uchar n)      { _vibra = n; }
 	void display(uchar n)    { _display = n; }
-	void keyLeft(uchar n)    { _keyLeft = n; }
-	void keyRight(uchar n)   { _keyRight = n; }
-	void keyUp(uchar n)      { _keyUp = n; }
-	void keyDown(uchar n)    { _keyDown = n; }
-	void keyA(uchar n)       { _keyA = n; }
-	void keyB(uchar n)       { _keyB = n; }
-	void keyX(uchar n)       { _keyX = n; }
-	void keyY(uchar n)       { _keyY = n; }
-	void keyStart(uchar n)   { _keyStart = n; }
+	void key(uchar n, int type);
 };
 

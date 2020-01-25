@@ -40,7 +40,9 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/fl_draw.H>
 
+#include <algorithm>
 #include <string>
+#include <vector>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -48,10 +50,8 @@
 
 #ifdef __GNUC__
 #include "images.h"
-#define WMAIN wmain
 #else
 #include "../Obj/images.h"
-#define WMAIN main
 #endif
 
 #include "lang.h"
@@ -119,7 +119,8 @@ public:
 class kbButton : public Fl_Button
 {
 private:
-	uchar _dxkey = 0;
+	configuration *_config = NULL;
+	int _keytype = KEYUP;
 
 public:
 	kbButton(int X, int Y, int W, int H, const char *L = NULL)
@@ -129,8 +130,17 @@ public:
 		clear_visible_focus();
 	}
 
+	void config(configuration *c) { _config = c; }
+	configuration *config() { return _config; }
+
+	void keytype(int k);
+	int keytype() { return _keytype; }
+
 	void dxkey(uchar n);
-	uchar dxkey() { return _dxkey; }
+
+	uchar dxkey() {
+		return _config ? _config->key(_keytype) : 0;
+	}
 };
 
 class PadBox : public Fl_Box
@@ -226,8 +236,7 @@ static void strip_last_utf8_char(char *s)
 
 bool DirectInput::init()
 {
-	if (DirectInput8Create(HINST_THISCOMPONENT, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID *>(&m_directInput), NULL) != DI_OK)
-	{
+	if (DirectInput8Create(HINST_THISCOMPONENT, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID *>(&m_directInput), NULL) != DI_OK)	{
 		return false;
 	}
 
@@ -265,10 +274,12 @@ bool DirectInput::ReadKeyboard()
 
 int MyWindow::handle(int event)
 {
-	uchar dx = 0;
+	uchar dxNew, dxOld;
 	kbButton *bt = but();
 
-	if (event == FL_KEYDOWN && bt) {
+	if (event == FL_KEYDOWN && bt && bt->config()) {
+		dxNew = dxOld = bt->dxkey();
+
 		if (directinput->init()) {
 			while (true) {
 				if (!directinput->ReadKeyboard()) {
@@ -279,26 +290,53 @@ int MyWindow::handle(int event)
 					if ((directinput->m_keyboardState[i] & 128) == 0) {
 						continue;
 					}
-					dx = static_cast<uchar>(i);
+					dxNew = static_cast<uchar>(i);
 					break;
 				}
 
 				/* don't ignore escape */
-				if (dx != DIK_ESCAPE && configuration::isIgnoredKey(dx)) {
+				if (dxNew != DIK_ESCAPE && configuration::isIgnoredKey(dxNew)) {
 					continue;
 				}
+
 				break;
 			}
 		}
 
-		bt->dxkey(dx);
+		if (dxNew == dxOld) {
+			/* just restore the previous button label */
+			bt->dxkey(dxOld);
+		} else {
+			configuration *cfg = bt->config();
+			int kt = bt->keytype();
+			std::vector<uchar> v;
+
+			for (int i = KEYUP; i <= KEYSTART; ++i) {
+				if (kt == i) {
+					v.push_back(dxNew);
+				} else {
+					v.push_back(cfg->key(i));
+				}
+			}
+
+			std::sort(v.begin(), v.end());
+
+			if (std::unique(v.begin(), v.end()) != v.end()) {
+				/* duplicate keys */
+				//MessageBoxA(0, "Key already in use!", "Warning", MB_ICONWARNING | MB_OK);
+				bt->dxkey(dxOld);
+			} else {
+				bt->dxkey(dxNew);
+			}
+		}
+
 		but(NULL);
 		redraw();
 	}
 	return Fl_Double_Window::handle(event);
 }
 
-void kbButton::dxkey(uchar dx)
+void kbButton::dxkey(uchar n)
 {
 	// https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ee418641(v%3Dvs.85)
 	const keyList_t keyNames[] =
@@ -341,39 +379,89 @@ void kbButton::dxkey(uchar dx)
 	};
 
 	char buf[80] = { 0 };
-	uchar dx_old = _dxkey;
-	_dxkey = dx;
+	uchar dxOld = dxkey();
+	uchar dx = n;
 
-	/* restore default labelsize */
-	//labelsize(LS);
+	label(NULL);
 
-	switch (_dxkey) {
-		/* prefer these labels over the localized ones */
-	case DIK_NUMPAD0: label("Num 0"); return;
-	case DIK_NUMPAD1: label("Num 1"); return;
-	case DIK_NUMPAD2: label("Num 2"); return;
-	case DIK_NUMPAD3: label("Num 3"); return;
-	case DIK_NUMPAD4: label("Num 4"); return;
-	case DIK_NUMPAD5: label("Num 5"); return;
-	case DIK_NUMPAD6: label("Num 6"); return;
-	case DIK_NUMPAD7: label("Num 7"); return;
-	case DIK_NUMPAD8: label("Num 8"); return;
-	case DIK_NUMPAD9: label("Num 9"); return;
-	case DIK_DECIMAL: label("Num ."); return;
-	case DIK_NUMPADCOMMA: label("Num ,"); return;
-	case DIK_DIVIDE: label("Num /"); return;
-	case DIK_MULTIPLY: label("Num *"); return;
-	case DIK_ADD: label("Num +"); return;
-	case DIK_SUBTRACT: label("Num -"); return;
-	case DIK_NUMPADEQUALS: label("Num ="); return;
-	case DIK_NUMPADENTER: label("Num Enter"); return;
+	/* prefer these labels over the localized ones */
+	switch (dx) {
+	case DIK_NUMPAD0:
+		label("Num 0");
+		break;
+	case DIK_NUMPAD1:
+		label("Num 1");
+		break;
+	case DIK_NUMPAD2:
+		label("Num 2");
+		break;
+	case DIK_NUMPAD3:
+		label("Num 3");
+		break;
+	case DIK_NUMPAD4:
+		label("Num 4");
+		break;
+	case DIK_NUMPAD5:
+		label("Num 5");
+		break;
+	case DIK_NUMPAD6:
+		label("Num 6");
+		break;
+	case DIK_NUMPAD7:
+		label("Num 7");
+		break;
+	case DIK_NUMPAD8:
+		label("Num 8");
+		break;
+	case DIK_NUMPAD9:
+		label("Num 9");
+		break;
+	case DIK_DECIMAL:
+		label("Num .");
+		break;
+	case DIK_NUMPADCOMMA:
+		label("Num ,");
+		break;
+	case DIK_DIVIDE:
+		label("Num /");
+		break;
+	case DIK_MULTIPLY:
+		label("Num *");
+		break;
+	case DIK_ADD:
+		label("Num +");
+		break;
+	case DIK_SUBTRACT:
+		label("Num -");
+		break;
+	case DIK_NUMPADEQUALS:
+		label("Num =");
+		break;
+	case DIK_NUMPADENTER:
+		label("Num Enter");
+		break;
+	default:
+		break;
 	}
 
-	if (_dxkey == 0 || configuration::isIgnoredKey(_dxkey)) {
-		_dxkey = dx_old;
+	if (label()) {
+		/* label was set, now save the key value and quit */
+		if (_config) {
+			_config->key(dx, keytype());
+		}
+		return;
 	}
 
-	if (GetKeyNameTextA(_dxkey << 16, buf, sizeof(buf) - 1) > 0) {
+	if (dx == 0 || configuration::isIgnoredKey(dx)) {
+		dx = dxOld;
+	}
+
+	/* save key value */
+	if (_config) {
+		_config->key(dx, keytype());
+	}
+
+	if (GetKeyNameTextA(dx << 16, buf, sizeof(buf) - 1) > 0) {
 		fl_font(labelfont(), LS);
 
 		/* test multibyte utf8 character stripping */
@@ -394,12 +482,6 @@ void kbButton::dxkey(uchar dx)
 
 		int limit = w() - 2;
 
-		/* lower the labelsize a bit */
-		//if (static_cast<int>(fl_width(buf)) > limit) {
-		//	labelsize(LS - 2);
-		//	fl_font(labelfont(), labelsize());
-		//}
-
 		/* shrink label until it fits the widget */
 		if (static_cast<int>(fl_width(buf)) > limit) {
 			while (buf[0] != 0) {
@@ -413,15 +495,31 @@ void kbButton::dxkey(uchar dx)
 		copy_label(buf);
 	} else {
 		for (unsigned int i = 0; i < ARRLEN(keyNames); ++i) {
-			if (_dxkey == keyNames[i].dxkey) {
+			if (dx == keyNames[i].dxkey) {
 				label(keyNames[i].name);
 				return;
 			}
 		}
 
-		_snprintf_s(buf, sizeof(buf) - 1, "0x%X", _dxkey);
+		_snprintf_s(buf, sizeof(buf) - 1, "0x%X", dx);
 		copy_label(buf);
 	}
+}
+
+void kbButton::keytype(int k)
+{
+	if (k >= KEYUP && k <= KEYSTART) {
+		_keytype = k;
+	} else {
+		_keytype = KEYUP;
+	}
+
+	if (!_config) {
+		return;
+	}
+
+	/* set label with dxkey() */
+	dxkey(_config->key(_keytype));
 }
 
 PadBox::PadBox(int X, int Y, int H, const char *L, Fl_Align align)
@@ -523,8 +621,8 @@ static bool getModuleRootDir(void)
 	}
 	*wcp = 0;
 
-	SecureZeroMemory(&moduleRootDir, MAX_PATH_LENGTH);
-	SecureZeroMemory(&confFile, MAX_PATH_LENGTH);
+	SecureZeroMemory(&moduleRootDir, MAX_PATH_LENGTH * sizeof(wchar_t));
+	SecureZeroMemory(&confFile, MAX_PATH_LENGTH * sizeof(wchar_t));
 
 	wcscpy_s(moduleRootDir, MAX_PATH_LENGTH - 1, mod);
 	wcscpy_s(confFile, MAX_PATH_LENGTH - 1, mod);
@@ -606,13 +704,13 @@ static void setController_cb(Fl_Widget *o, void *v)
 	Fl_Box *b = reinterpret_cast<Fl_Box *>(v);
 	int n = p->value();
 
-	if (n == configuration::GAMEPAD_CTRLS) {
+	if (n == GAMEPAD_CTRLS) {
 		config->controls(n);
 		b->image(&back2);
 		g2_keyboard->hide();
 		g2_gamepad->show();
 	} else {
-		config->controls(configuration::KEYBOARD_CTRLS);
+		config->controls(KEYBOARD_CTRLS);
 		b->image(&back3);
 		g2_keyboard->show();
 		g2_gamepad->hide();
@@ -626,15 +724,15 @@ static void setDefaultKeys_cb(Fl_Widget *, void *)
 	config->setDefaultKeys();
 
 	/* "refresh" buttons */
-	btUp->dxkey(config->keyUp());
-	btDown->dxkey(config->keyDown());
-	btLeft->dxkey(config->keyLeft());
-	btRight->dxkey(config->keyRight());
-	btA->dxkey(config->keyA());
-	btB->dxkey(config->keyB());
-	btX->dxkey(config->keyX());
-	btY->dxkey(config->keyY());
-	btStart->dxkey(config->keyStart());
+	btUp->dxkey(config->key(KEYUP));
+	btDown->dxkey(config->key(KEYDOWN));
+	btLeft->dxkey(config->key(KEYLEFT));
+	btRight->dxkey(config->key(KEYRIGHT));
+	btA->dxkey(config->key(KEYA));
+	btB->dxkey(config->key(KEYB));
+	btX->dxkey(config->key(KEYX));
+	btY->dxkey(config->key(KEYY));
+	btStart->dxkey(config->key(KEYSTART));
 
 	win->redraw();
 }
@@ -642,25 +740,13 @@ static void setDefaultKeys_cb(Fl_Widget *, void *)
 static void setKey_cb(Fl_Widget *o, void *)
 {
 	kbButton *b = dynamic_cast<kbButton *>(o);
-	b->label(ui_Press[lang]);
-	//b->labelsize(LS);
+	b->label(ui_Press[lang]);  /* "Press!" */
 	win->but(b);
 	win->redraw();
 }
 
 static void bigButton_cb(Fl_Widget *, void *)
 {
-	/* save current key values in config */
-	config->keyUp(btUp->dxkey());
-	config->keyDown(btDown->dxkey());
-	config->keyLeft(btLeft->dxkey());
-	config->keyRight(btRight->dxkey());
-	config->keyA(btA->dxkey());
-	config->keyB(btB->dxkey());
-	config->keyX(btX->dxkey());
-	config->keyY(btY->dxkey());
-	config->keyStart(btStart->dxkey());
-
 	if (!config->saveConfig()) {
 		MessageBoxA(0, "Failed to save configuration.", windowTitle, MB_ICONERROR|MB_OK);
 	}
@@ -794,7 +880,8 @@ static void startWindow(bool restart)
 					
 					/* Up */
 					btUp = new kbButton(174, 241, 89, 38);
-					btUp->dxkey(config->keyUp());
+					btUp->config(config);
+					btUp->keytype(KEYUP);
 					btUp->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(174, 203, 89, 38, ui_Up[lang]);
 					o->labelsize(LS); }
@@ -803,7 +890,8 @@ static void startWindow(bool restart)
 
 					/* Left */
 					btLeft = new kbButton(70, 311, 89, 38);
-					btLeft->dxkey(config->keyLeft());
+					btLeft->config(config);
+					btLeft->keytype(KEYLEFT);
 					btLeft->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(70, 273, 89, 38, ui_Left[lang]);
 					o->labelsize(LS); }
@@ -812,7 +900,8 @@ static void startWindow(bool restart)
 
 					/* Right */
 					btRight = new kbButton(274, 311, 89, 38);
-					btRight->dxkey(config->keyRight());
+					btRight->config(config);
+					btRight->keytype(KEYRIGHT);
 					btRight->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(274, 273, 89, 38, ui_Right[lang]);
 					o->labelsize(LS); }
@@ -821,7 +910,8 @@ static void startWindow(bool restart)
 
 					/* Down */
 					btDown = new kbButton(174, 381, 89, 38);
-					btDown->dxkey(config->keyDown());
+					btDown->config(config);
+					btDown->keytype(KEYDOWN);
 					btDown->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(174, 423, 89, 38, ui_Down[lang]);
 					o->labelsize(LS); }
@@ -836,7 +926,8 @@ static void startWindow(bool restart)
 
 					/* Score Attack / Time Attack */
 					btX = new kbButton(432, 243, 89, 38);
-					btX->dxkey(config->keyX());
+					btX->config(config);
+					btX->keytype(KEYX);
 					btX->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(452, 223, 1, 1, ui_ScoreAttack[lang]);
 					o->labelsize(LS);
@@ -846,7 +937,8 @@ static void startWindow(bool restart)
 					
 					/* Super Sonic */
 					btY = new kbButton(432, 329, 89, 38);
-					btY->dxkey(config->keyY());
+					btY->config(config);
+					btY->keytype(KEYY);
 					btY->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(452, 305, 1, 1, ui_SuperSonic[lang]);
 					o->labelsize(LS);
@@ -856,7 +948,8 @@ static void startWindow(bool restart)
 
 					/* Jump / Back */
 					btB = new kbButton(432, 411, 89, 38);
-					btB->dxkey(config->keyB());
+					btB->config(config);
+					btB->keytype(KEYB);
 					btB->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(452, 387, 1, 1, bufJB);
 					o->labelsize(LS);
@@ -866,7 +959,8 @@ static void startWindow(bool restart)
 
 					/* Start */
 					btStart = new kbButton(590, 329, 89, 38);
-					btStart->dxkey(config->keyStart());
+					btStart->config(config);
+					btStart->keytype(KEYSTART);
 					btStart->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(590, 305, 1, 1, ui_Start[lang]);
 					o->labelsize(LS);
@@ -876,7 +970,8 @@ static void startWindow(bool restart)
 
 					/* Jump / Select */
 					btA = new kbButton(590, 411, 89, 38);
-					btA->dxkey(config->keyA());
+					btA->config(config);
+					btA->keytype(KEYA);
 					btA->callback(setKey_cb);
 					{ Fl_Box *o = new Fl_Box(590, 387, 1, 1, bufJS);
 					o->labelsize(LS);
@@ -955,7 +1050,7 @@ static void startWindow(bool restart)
 	delete[] devLabels;
 }
 
-int WMAIN(int argc, wchar_t *argv[])
+int main(int argc, char *argv[])
 {
 	if (!getModuleRootDir()) {
 		MessageBoxA(0, "Failed calling GetModuleFileName()", windowTitle, MB_ICONERROR|MB_OK);
@@ -964,13 +1059,17 @@ int WMAIN(int argc, wchar_t *argv[])
 
 	config = new configuration(confFile);
 
-	if (argc > 1 && wcscmp(argv[1], L"-QuickBoot")) {
-		if (!config->loadConfig()) {
-			config->loadDefaultConfig();
-			config->saveConfig();
+	if (argc > 0) {
+		for (int i = 0; i < argc; ++i) {
+			if (stricmp(argv[i], "-QuickBoot") == 0) {
+				if (!config->loadConfig()) {
+					config->loadDefaultConfig();
+					config->saveConfig();
+				}
+				delete config;
+				return launchGame();
+			}
 		}
-		delete config;
-		return launchGame();
 	}
 
 	directinput = new DirectInput();

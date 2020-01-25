@@ -20,6 +20,7 @@
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v142</PlatformToolset>
+    <SpectreMitigation>Spectre</SpectreMitigation>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -36,7 +37,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\src\zlib;$(ProjectDir)\src\jpeg;$(ProjectDir)\src\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\src;$(ProjectDir)\zlib;$(ProjectDir)\libpng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -53,12 +54,21 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalOptions>/wd4101 /wd4244 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Lib>
       <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <!--<ClCompile Include="$(ProjectDir)\src\src\fl_images_core.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_BMP_Image.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_File_Icon2.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_GIF_Image.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Help_Dialog.cxx" />-->
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_JPEG_Image.cxx" />-->
+    <ClCompile Include="$(ProjectDir)\src\src\Fl_PNG_Image.cxx" />
+    <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_PNM_Image.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl.cxx" />
     <!--<ClCompile Include="$(ProjectDir)\src\src\Fl_Adjuster.cxx" />-->
     <ClCompile Include="$(ProjectDir)\src\src\Fl_Bitmap.cxx" />

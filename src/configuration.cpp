@@ -30,6 +30,9 @@
 #include <dinput.h>
 
 #include <FL/Fl.H>
+
+#include <algorithm>
+#include <vector>
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -131,7 +134,8 @@ bool configuration::loadConfig(void)
 	FILE *fp = NULL;
 	unsigned char buf[CONF_SIZE];
 	unsigned char *p = buf;
-	bool found = false;
+	bool resFound = false;
+	std::vector<uchar> v;
 
 	if (_wfopen_s(&fp, _confFile, L"rb") != 0) {
 		return false;
@@ -157,12 +161,12 @@ bool configuration::loadConfig(void)
 	for (int i = 0; i < SZRESLIST; ++i) {
 		if (_resW == resList[i].w && _resH == resList[i].h) {
 			_resN = i;
-			found = true;
+			resFound = true;
 			break;
 		}
 	}
 
-	if (!found) {
+	if (!resFound) {
 		_resW = resList[0].w;
 		_resH = resList[0].h;
 		_resN = 0;
@@ -175,7 +179,11 @@ bool configuration::loadConfig(void)
 	_display = (p[4] > _screenCount - 1) ? 0 : p[4];
 	p += 5;
 
-#define GETKEY(var,def)  var=p[0]; p+=4; if (isIgnoredKey(var)) { var=def; }
+#define GETKEY(var,def) \
+	var=p[0]; \
+	p+=4; \
+	if (isIgnoredKey(var)) { var=def; } \
+	v.push_back(var);
 
 	GETKEY(_keyLeft, DIK_LEFT);
 	GETKEY(_keyRight, DIK_RIGHT);
@@ -191,6 +199,13 @@ bool configuration::loadConfig(void)
 
 	/* end number */
 	if (TO_UINT32(p) != 1701) {
+		return false;
+	}
+
+	std::sort(v.begin(), v.end());
+	
+	if (std::unique(v.begin(), v.end()) != v.end()) {
+		/* duplicate keys */
 		return false;
 	}
 
@@ -271,6 +286,73 @@ bool configuration::saveConfig(void)
 
 	fclose(fp);
 	return true;
+}
+
+/* get key */
+uchar configuration::key(int type)
+{
+	switch (type)
+	{
+	case KEYUP:
+		return _keyUp;
+	case KEYDOWN:
+		return _keyDown;
+	case KEYLEFT:
+		return _keyLeft;
+	case KEYRIGHT:
+		return _keyRight;
+	case KEYA:
+		return _keyA;
+	case KEYB:
+		return _keyB;
+	case KEYX:
+		return _keyX;
+	case KEYY:
+		return _keyY;
+	case KEYSTART:
+		return _keyStart;
+	default:
+		break;
+	}
+
+	return _keyUp;
+}
+
+/* set key */
+void configuration::key(uchar n, int type)
+{
+	switch (type)
+	{
+	case KEYUP:
+		_keyUp = n;
+		break;
+	case KEYDOWN:
+		_keyDown = n;
+		break;
+	case KEYLEFT:
+		_keyLeft = n;
+		break;
+	case KEYRIGHT:
+		_keyRight = n;
+		break;
+	case KEYA:
+		_keyA = n;
+		break;
+	case KEYB:
+		_keyB = n;
+		break;
+	case KEYX:
+		_keyX = n;
+		break;
+	case KEYY:
+		_keyY = n;
+		break;
+	case KEYSTART:
+		_keyStart = n;
+		break;
+	default:
+		break;
+	}
 }
 
 configuration::configuration(const wchar_t *filename)
