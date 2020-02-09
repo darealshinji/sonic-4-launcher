@@ -170,8 +170,7 @@ public:
 };
 
 
-static const char *windowTitle = "SONIC THE HEDGEHOG 4 Episode I";
-static void startWindow(bool restart);
+static void startWindow(bool restart, int setX, int setY);
 
 static configuration *config = NULL;
 static DirectInput *directinput = NULL;
@@ -198,7 +197,6 @@ IMAGE(pad_controls_v02);
 
 static int rv = 0;
 static unsigned int lang = 0;
-static int save_x = 0, save_y = 0;
 
 static wchar_t moduleRootDir[MAX_PATH_LENGTH];
 static wchar_t confFile[MAX_PATH_LENGTH];
@@ -323,7 +321,6 @@ int MyWindow::handle(int event)
 
 			if (std::unique(v.begin(), v.end()) != v.end()) {
 				/* duplicate keys */
-				//MessageBoxA(0, "Key already in use!", "Warning", MB_ICONWARNING | MB_OK);
 				bt->dxkey(dxOld);
 			} else {
 				bt->dxkey(dxNew);
@@ -680,12 +677,12 @@ static void setDisplay_cb(Fl_Widget *o, void *)
 static void setLang_cb(Fl_Widget *o, void *)
 {
 	MyChoice *b = dynamic_cast<MyChoice *>(o);
+	int setX = win->x();
+	int setY = win->y();
 	lang = b->value();
 	config->language(static_cast<uchar>(lang));
-	save_x = win->x();
-	save_y = win->y();
 	win->hide();
-	startWindow(true);
+	startWindow(true, setX, setY);
 }
 
 static void fullscreen_cb(Fl_Widget *, void *)
@@ -748,7 +745,7 @@ static void setKey_cb(Fl_Widget *o, void *)
 static void bigButton_cb(Fl_Widget *, void *)
 {
 	if (!config->saveConfig()) {
-		MessageBoxA(0, "Failed to save configuration.", windowTitle, MB_ICONERROR|MB_OK);
+		MessageBoxA(0, "Couldn't save configuration.", "Error", MB_ICONERROR|MB_OK);
 	}
 	win->hide();
 	rv = launchGame();
@@ -762,7 +759,7 @@ static int esc_handler(int event)
 	return 0;
 }
 
-static void startWindow(bool restart)
+static void startWindow(bool restart, int setX, int setY)
 {
 	Fl_Tabs *tabs;
 	Fl_Group *g1, *g2;
@@ -790,7 +787,7 @@ static void startWindow(bool restart)
 	/* The icon from the exe's resources isn't used by default. Weird. */
 	Fl_Window::default_icon(&icon);
 
-	win = new MyWindow(762, 656, windowTitle);
+	win = new MyWindow(762, 656, "SONIC THE HEDGEHOG 4 Episode I");
 	{
 		tabs = new Fl_Tabs(32, 16, 698, 532);
 		{
@@ -1037,7 +1034,7 @@ static void startWindow(bool restart)
 
 	if (restart) {
 		/* window restarted, restore old positions */
-		win->position(save_x, save_y);
+		win->position(setX, setY);
 	} else {
 		/* new window, position in center */
 		win->position((Fl::w() - 762) / 2, (Fl::h() - 656) / 2);
@@ -1053,7 +1050,7 @@ static void startWindow(bool restart)
 int main(int argc, char *argv[])
 {
 	if (!getModuleRootDir()) {
-		MessageBoxA(0, "Failed calling GetModuleFileName()", windowTitle, MB_ICONERROR|MB_OK);
+		MessageBoxA(0, "Failed calling GetModuleFileName()", "Error", MB_ICONERROR|MB_OK);
 		return 1;
 	}
 
@@ -1077,7 +1074,7 @@ int main(int argc, char *argv[])
 	/* needs to be initialized before we launch our window */
 	directinput->init();
 
-	startWindow(false);
+	startWindow(false, 0, 0);
 
 	delete directinput;
 	delete config;

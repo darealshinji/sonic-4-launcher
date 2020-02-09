@@ -11,7 +11,7 @@ How to build
 ------------
 Checkout the submodule with `git submodule init && git submodule update`.
 Then open `SonicLauncher.sln` in Visual Studio 2019 or use the `msbuild` command from the
-Visual Studio developer command prompt or use the Makfile if you want to build with MinGW/GCC.
+Visual Studio developer command prompt or use the Makefile if you want to build with MinGW/GCC.
 
 License
 -------

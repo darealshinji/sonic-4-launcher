@@ -40,8 +40,9 @@
 
 #include "configuration.hpp"
 
-#define CONF_SIZE        53
-#define TO_UINT32(x)     static_cast<uint32_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8 | (0xFF & x[2]) << 16 | (0xFF & x[3]) << 24))
+#define CONF_SIZE     53
+#define TO_UINT16(x)  static_cast<uint16_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8))
+#define TO_UINT32(x)  static_cast<uint32_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8 | (0xFF & x[2]) << 16 | (0xFF & x[3]) << 24))
 
 
 const res_t configuration::resList[SZRESLIST] =
@@ -153,9 +154,9 @@ bool configuration::loadConfig(void)
 	}
 	p += 4;
 
-	_resW = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
+	_resW = TO_UINT16(p);
 	p += 2;
-	_resH = static_cast<uint16_t>(((0xFF & p[0]) << 0 | (0xFF & p[1]) << 8));
+	_resH = TO_UINT16(p);
 	p += 2;
 
 	for (int i = 0; i < SZRESLIST; ++i) {
