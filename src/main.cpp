@@ -123,21 +123,25 @@ private:
 	int _keytype = KEYUP;
 
 public:
-	kbButton(int X, int Y, int W, int H, const char *L = NULL)
-		: Fl_Button(X, Y, W, H, L)
+	kbButton(int X, int Y, int W, int H)
+		: Fl_Button(X, Y, W, H, NULL)
 	{
 		labelsize(LS);
 		clear_visible_focus();
 	}
 
+	/* get/set pointer to a configuration */
 	void config(configuration *c) { _config = c; }
 	configuration *config() { return _config; }
 
+	/* get/set the key type for this button */
 	void keytype(int k);
 	int keytype() { return _keytype; }
 
+	/* get the directX value for this key */
 	void dxkey(uchar n);
 
+	/* set the directX value for this key; will also change the label */
 	uchar dxkey() {
 		return _config ? _config->key(_keytype) : 0;
 	}
@@ -163,6 +167,8 @@ public:
 		: Fl_Double_Window(W, H, L)
 	{}
 
+	/* associate a kbButton; when a pressed key will be grabbed from DirectInput
+	 * we can change the key associated to this button */
 	void but(kbButton *o) { _but = o; }
 	kbButton *but() { return _but; }
 
@@ -272,64 +278,93 @@ bool DirectInput::ReadKeyboard()
 
 int MyWindow::handle(int event)
 {
+	int evX, evY, minX, minY, maxX, maxY;
 	uchar dxNew, dxOld;
 	kbButton *bt = but();
 
-	if (event == FL_KEYDOWN && bt && bt->config()) {
-		dxNew = dxOld = bt->dxkey();
+	if (bt) {
+		/* a key button was already pressed -> ignore mouse events */
+		switch (event) {
+		case FL_PUSH:
+			evX = Fl::event_x();
+			evY = Fl::event_y();
+			minX = bt->x();
+			minY = bt->y();
+			maxX = bt->x() + bt->w();
+			maxY = bt->y() + bt->h();
+			/* if same button is pressed again -> restore */
+			if (evX>=minX && evX<=maxX && evY>=minY && evY<=maxY) {
+				bt->dxkey(bt->dxkey());
+				bt->value(0);
+				but(NULL);
+				redraw();
+				return 0;
+			}
+		case FL_DRAG:
+		case FL_RELEASE:
+		case FL_MOVE:
+		case FL_MOUSEWHEEL:
+			return 0;
+		}
 
-		if (directinput->init()) {
-			while (true) {
-				if (!directinput->ReadKeyboard()) {
-					continue;
-				}
+		if (bt->config() && event == FL_KEYDOWN) {
+			dxNew = dxOld = bt->dxkey();
 
-				for (unsigned int i = 0; i < sizeof(directinput->m_keyboardState); ++i) {
-					if ((directinput->m_keyboardState[i] & 128) == 0) {
+			if (directinput->init()) {
+				while (true) {
+					if (!directinput->ReadKeyboard()) {
 						continue;
 					}
-					dxNew = static_cast<uchar>(i);
+
+					for (unsigned int i = 0; i < sizeof(directinput->m_keyboardState); ++i) {
+						if ((directinput->m_keyboardState[i] & 128) == 0) {
+							continue;
+						}
+						dxNew = static_cast<uchar>(i);
+						break;
+					}
+
+					/* don't ignore escape */
+					if (dxNew != DIK_ESCAPE && configuration::isIgnoredKey(dxNew)) {
+						continue;
+					}
+
 					break;
 				}
-
-				/* don't ignore escape */
-				if (dxNew != DIK_ESCAPE && configuration::isIgnoredKey(dxNew)) {
-					continue;
-				}
-
-				break;
-			}
-		}
-
-		if (dxNew == dxOld) {
-			/* just restore the previous button label */
-			bt->dxkey(dxOld);
-		} else {
-			configuration *cfg = bt->config();
-			int kt = bt->keytype();
-			std::vector<uchar> v;
-
-			for (int i = KEYUP; i <= KEYSTART; ++i) {
-				if (kt == i) {
-					v.push_back(dxNew);
-				} else {
-					v.push_back(cfg->key(i));
-				}
 			}
 
-			std::sort(v.begin(), v.end());
-
-			if (std::unique(v.begin(), v.end()) != v.end()) {
-				/* duplicate keys */
+			if (dxNew == dxOld) {
+				/* just restore the previous button label */
 				bt->dxkey(dxOld);
 			} else {
-				bt->dxkey(dxNew);
-			}
-		}
+				configuration *cfg = bt->config();
+				int kt = bt->keytype();
+				std::vector<uchar> v;
 
-		but(NULL);
-		redraw();
+				for (int i = KEYUP; i <= KEYSTART; ++i) {
+					if (kt == i) {
+						v.push_back(dxNew);
+					} else {
+						v.push_back(cfg->key(i));
+					}
+				}
+
+				std::sort(v.begin(), v.end());
+
+				if (std::unique(v.begin(), v.end()) != v.end()) {
+					/* duplicate keys */
+					bt->dxkey(dxOld);
+				} else {
+					bt->dxkey(dxNew);
+				}
+			}
+
+			bt->value(0);
+			but(NULL);
+			redraw();
+		}
 	}
+
 	return Fl_Double_Window::handle(event);
 }
 
@@ -375,7 +410,7 @@ void kbButton::dxkey(uchar n)
 		{DIK_YEN, "Yen"}
 	};
 
-	char buf[80] = { 0 };
+	char buf[128] = { 0 };
 	uchar dxOld = dxkey();
 	uchar dx = n;
 
@@ -463,7 +498,7 @@ void kbButton::dxkey(uchar n)
 
 		/* test multibyte utf8 character stripping */
 		/*
-		snprintf(buf, 63, "%s",
+		snprintf(buf, sizeof(buf) - 1, "%s",
 			// ÀàÁáÂâÄäÈèÉéÊêÌìÍíÎîÒòÓóÔôÖöÙùÚúÛûÜü
 			"\xC3\x80\xC3\xA0\xC3\x81\xC3\xA1\xC3\x82\xC3\xA2\xC3\x84\xC3\xA4\xC3\x88"
 			"\xC3\xA8\xC3\x89\xC3\xA9\xC3\x8A\xC3\xAA\xC3\x8C\xC3\xAC\xC3\x8D\xC3\xAD"
@@ -738,6 +773,7 @@ static void setKey_cb(Fl_Widget *o, void *)
 {
 	kbButton *b = dynamic_cast<kbButton *>(o);
 	b->label(ui_Press[lang]);  /* "Press!" */
+	b->value(1);
 	win->but(b);
 	win->redraw();
 }
@@ -848,7 +884,7 @@ static void startWindow(bool restart, int setX, int setY)
 
 			/* "Player 1" */
 			g2 = new Fl_Group(32, 36, 698, 512);
-			g2->copy_label(buf);
+			g2->label(buf);
 			{
 				const Fl_Menu_Item conItems[] = {
 					MENUITEM(ui_Keyboard[lang]),
