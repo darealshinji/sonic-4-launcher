@@ -23,6 +23,7 @@
  */
 
 #include <windows.h>
+#include <shellapi.h>
 
 #ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0800
@@ -197,7 +198,6 @@ IMAGE(button_02);
 IMAGE(button_03);
 IMAGE(button_04);
 IMAGE(button_05);
-IMAGE(icon);
 IMAGE(pad_controls_v02);
 #undef IMAGE
 
@@ -820,8 +820,15 @@ static void startWindow(bool restart, int setX, int setY)
 	Fl::add_handler(esc_handler);
 	Fl::get_system_colors();
 
-	/* The icon from the exe's resources isn't used by default. Weird. */
-	Fl_Window::default_icon(&icon);
+	/* use exe's icon resource to set window default icons */
+	wchar_t mod[MAX_PATH_LENGTH];
+	HICON hIconL[1] = { 0 };
+	HICON hIconS[1] = { 0 };
+	HICON *phIconL = hIconL;
+	HICON *phIconS = hIconS;
+	GetModuleFileNameW(NULL, mod, MAX_PATH_LENGTH);
+	ExtractIconExW(mod, 0, phIconL, phIconS, 1);
+	Fl_Window::default_icons(hIconL[0], hIconS[0]);
 
 	win = new MyWindow(762, 656, "SONIC THE HEDGEHOG 4 Episode I");
 	{

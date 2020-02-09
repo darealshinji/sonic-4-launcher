@@ -10,5 +10,4 @@
 ..\Obj\hexdump.exe button_03.png >> ..\Obj\images.h
 ..\Obj\hexdump.exe button_04.png >> ..\Obj\images.h
 ..\Obj\hexdump.exe button_05.png >> ..\Obj\images.h
-..\Obj\hexdump.exe icon.png >> ..\Obj\images.h
 ..\Obj\hexdump.exe pad_controls_v02.png >> ..\Obj\images.h

@@ -10,7 +10,7 @@ endif
 
 CFLAGS = -O3 -Wall -I. -I./fltk -I./fltk/src -I./fltk/libpng -I./fltk/zlib -DNDEBUG -ffunction-sections -fdata-sections
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = -Wl,--gc-sections -mwindows -lcomctl32 -ldinput8 -ldxguid -lole32 -static
+LDFLAGS = -Wl,--gc-sections -mwindows -lcomctl32 -ldinput8 -ldxguid -lole32 -lshell32 -static
 
 MINGW_PREFIX = i686-w64-mingw32-
 MINGW_THREADS = -win32
@@ -80,7 +80,7 @@ distclean: clean
 	rm -f $(FLTK_ZLIB_OBJS)
 
 IMAGES = arrow_01.png arrow_02.png arrow_03.png arrow_04.png back1.png back2.png back3.png \
- button_01.png button_02.png button_03.png button_04.png button_05.png icon.png pad_controls_v02.png
+ button_01.png button_02.png button_03.png button_04.png button_05.png pad_controls_v02.png
 
 $(images_h):
 	$(vecho)cd images; $(foreach img,$(IMAGES),$(XXD) -i $(img) >> ../$(images_h); )
