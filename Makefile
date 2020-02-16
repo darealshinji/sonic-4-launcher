@@ -8,7 +8,11 @@ Q = @
 vecho = @echo "  $@"; 
 endif
 
-CFLAGS = -O3 -Wall -I. -I./fltk -I./fltk/src -I./fltk/libpng -I./fltk/zlib -DNDEBUG -ffunction-sections -fdata-sections
+# output directory
+OUT = out/
+MKOUT = @mkdir -p $(dir $@)
+
+CFLAGS = -O3 -Wall -I./$(OUT) -I./fltk -I./fltk/src -I./fltk/libpng -I./fltk/zlib -DNDEBUG -ffunction-sections -fdata-sections
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = -Wl,--gc-sections -mwindows -lcomctl32 -ldinput8 -ldxguid -lole32 -lshell32 -static
 
@@ -23,14 +27,14 @@ STRIP = $(MINGW_PREFIX)strip
 WINDRES = $(MINGW_PREFIX)windres
 XXD = xxd
 
-images_h = images.h
+images_h = $(OUT)images.h
 
-BIN = SonicLauncher.exe
+BIN = $(OUT)SonicLauncher.exe
 BIN_SRCFILES = configuration.cpp main.cpp
 BIN_SRCS = $(addprefix src/,$(BIN_SRCFILES)) SonicLauncher.rc
-BIN_OBJS = $(addsuffix .o,$(BIN_SRCS))
+BIN_OBJS = $(addprefix $(OUT),$(addsuffix .o,$(BIN_SRCS)))
 
-FLTK = libfltk.a
+FLTK = $(OUT)libfltk.a
 FLTK_SRCFILES = Fl.cxx Fl_Bitmap.cxx Fl_Browser_load.cxx Fl_Box.cxx Fl_Button.cxx Fl_Check_Button.cxx Fl_Choice.cxx Fl_Device.cxx Fl_Double_Window.cxx \
  Fl_Group.cxx Fl_Image.cxx Fl_Input.cxx Fl_Input_.cxx Fl_Light_Button.cxx Fl_Menu.cxx Fl_Menu_.cxx Fl_Menu_Button.cxx Fl_Menu_Window.cxx Fl_Menu_add.cxx \
  Fl_Overlay_Window.cxx Fl_Pixmap.cxx Fl_Preferences.cxx Fl_Repeat_Button.cxx Fl_Return_Button.cxx Fl_Shared_Image.cxx Fl_Single_Window.cxx Fl_Tabs.cxx \
@@ -52,17 +56,17 @@ FLTK_SRCFILES = Fl.cxx Fl_Bitmap.cxx Fl_Browser_load.cxx Fl_Box.cxx Fl_Button.cx
 FLTK_SRCFILES += Fl_PNG_Image.cxx
 #fl_images_core.cxx Fl_BMP_Image.cxx Fl_File_Icon2.cxx Fl_GIF_Image.cxx Fl_Help_Dialog.cxx Fl_JPEG_Image.cxx Fl_PNM_Image.cxx
 FLTK_SRCS = $(addprefix fltk/src/src/,$(FLTK_SRCFILES))
-FLTK_OBJS = $(addsuffix .o,$(FLTK_SRCS))
+FLTK_OBJS = $(addprefix $(OUT),$(addsuffix .o,$(FLTK_SRCS)))
 
-FLTK_PNG = libpng.a
+FLTK_PNG = $(OUT)libpng.a
 FLTK_PNG_SRCFILES = png.c pngerror.c pngget.c pngmem.c pngpread.c pngread.c pngrio.c pngrtran.c pngrutil.c pngset.c pngtrans.c pngwio.c pngwrite.c pngwtran.c pngwutil.c
 FLTK_PNG_SRCS = $(addprefix fltk/libpng/,$(FLTK_PNG_SRCFILES))
-FLTK_PNG_OBJS = $(addsuffix .o,$(FLTK_PNG_SRCS))
+FLTK_PNG_OBJS = $(addprefix $(OUT),$(addsuffix .o,$(FLTK_PNG_SRCS)))
 
-FLTK_ZLIB = libz.a
+FLTK_ZLIB = $(OUT)libz.a
 FLTK_ZLIB_SRCFILES = adler32.c compress.c crc32.c deflate.c inflate.c infback.c inftrees.c inffast.c trees.c uncompr.c zutil.c
 FLTK_ZLIB_SRCS = $(addprefix fltk/zlib/,$(FLTK_ZLIB_SRCFILES))
-FLTK_ZLIB_OBJS = $(addsuffix .o,$(FLTK_ZLIB_SRCS))
+FLTK_ZLIB_OBJS = $(addprefix $(OUT),$(addsuffix .o,$(FLTK_ZLIB_SRCS)))
 
 
 all: $(BIN)
@@ -71,18 +75,15 @@ clean:
 	rm -f $(BIN) $(images_h)
 	rm -f $(BIN_OBJS)
 
-distclean: clean
-	rm -f main.conf
-	rm -f $(FLTK) $(FLTK_PNG) $(FLTK_ZLIB)
-	rm -f $(FLTK_OBJS)
-	rm -f $(FLTK_IMAGES_OBJS)
-	rm -f $(FLTK_PNG_OBJS)
-	rm -f $(FLTK_ZLIB_OBJS)
+distclean:
+	rm -rf $(OUT)
+
 
 IMAGES = arrow_01.png arrow_02.png arrow_03.png arrow_04.png back1.png back2.png back3.png \
  button_01.png button_02.png button_03.png button_04.png button_05.png pad_controls_v02.png
 
 $(images_h):
+	$(MKOUT)
 	$(vecho)cd images; $(foreach img,$(IMAGES),$(XXD) -i $(img) >> ../$(images_h); )
 
 $(BIN_OBJS): $(images_h)
@@ -101,14 +102,18 @@ $(FLTK_ZLIB): $(FLTK_ZLIB_OBJS)
 	$(vecho)$(AR) cr $@ $^ && $(RANLIB) $@
 
 %.rc.o:
-	$(vecho)$(WINDRES) -i $(basename $@) -o $@
+	$(MKOUT)
+	$(vecho)$(WINDRES) -i $(subst $(OUT),,$(basename $@)) -o $@
 
 %.c.o:
-	$(vecho)$(CC) $(CFLAGS) -c $(basename $@) -o $@
+	$(MKOUT)
+	$(vecho)$(CC) $(CFLAGS) -c $(subst $(OUT),,$(basename $@)) -o $@
 
 %.cxx.o:
-	$(vecho)$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
+	$(MKOUT)
+	$(vecho)$(CXX) $(CXXFLAGS) -c $(subst $(OUT),,$(basename $@)) -o $@
 
 %.cpp.o:
-	$(vecho)$(CXX) $(CXXFLAGS) -c $(basename $@) -o $@
+	$(MKOUT)
+	$(vecho)$(CXX) $(CXXFLAGS) -c $(subst $(OUT),,$(basename $@)) -o $@
 
