@@ -215,7 +215,6 @@ static const Fl_Menu_Item langItems[] =
 	MENUITEM("Fran" "\xC3\xA7" "ais"),  /* Français */
 	MENUITEM("Italiano"),
 	MENUITEM("\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"),  /* Japanese */
-	//MENUITEM("Polski"),  /* not available as in-game language */
 	{0}
 };
 

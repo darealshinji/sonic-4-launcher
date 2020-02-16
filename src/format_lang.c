@@ -21,18 +21,18 @@ int main(void)
 
   const char *ui[] = {
     "Settings",
-    "GraphicsSettings",
+    "0GraphicsSettings",  // unused
     "GraphicsDevice",
     "Resolution",
     "Fullscreen",
-    "AudioSettings",
-    "OutputDevice",
+    "0AudioSettings",  // unused
+    "0OutputDevice",  // unused
     "Language",
     "ControllerSelection",
-    "AdditionalController",
-    "ControllerNumber",
-    "Layout",
-    "ConfigurationLayout",
+    "0AdditionalController",  // unused
+    "0ControllerNumber",  // unused
+    "0Layout",  // unused
+    "0ConfigurationLayout",  // unused
     "Movement",
     "Action",
     "Up",
@@ -50,11 +50,11 @@ int main(void)
     "ScoreAttack",
     "Press",
     "ResetToDefault",
-    "Configuration",
-    "ConfigurationSaved",
+    "0Configuration",  // unused
+    "0ConfigurationSaved",  // unused
     "SuperSonic",
     "Vibrate",
-    "Leaderboards",
+    "0Leaderboards",  // unused
     NULL
   };
 
@@ -87,7 +87,13 @@ int main(void)
         if (ui[i] == NULL) {
           return 0;
         }
-        printf("const char *ui_%s[] = { \"", ui[i]);
+        if (ui[i][0] == '0') {
+          const char *p = ui[i];
+          p++;
+          printf("//const char *ui_%s[] = { \"", p);
+        } else {
+          printf("const char *ui_%s[] = { \"", ui[i]);
+        }
         newEntry = 0;
         hex = 0;
         i++;
