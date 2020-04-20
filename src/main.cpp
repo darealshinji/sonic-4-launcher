@@ -47,7 +47,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <wchar.h>
 
 #ifdef __GNUC__
@@ -653,8 +652,8 @@ static bool getModuleRootDir(void)
 	}
 	*wcp = 0;
 
-	wmemset(moduleRootDir, 0, MAX_PATH_LENGTH);
-	wmemset(confFile, 0, MAX_PATH_LENGTH);
+	SecureZeroMemory(&moduleRootDir, MAX_PATH_LENGTH * sizeof(wchar_t));
+	SecureZeroMemory(&confFile, MAX_PATH_LENGTH * sizeof(wchar_t));
 
 	wcscpy_s(moduleRootDir, MAX_PATH_LENGTH - 1, mod);
 	wcscpy_s(confFile, MAX_PATH_LENGTH - 1, mod);
@@ -673,9 +672,9 @@ static int launchGame(void)
 	wcscpy_s(command, MAX_PATH_LENGTH - 1, moduleRootDir);
 	wcscat_s(command, MAX_PATH_LENGTH - 1, L"\\Sonic_vis.exe");
 
-	memset(&si, 0, sizeof(si));
+	SecureZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
-	memset(&pi, 0, sizeof(pi));
+	SecureZeroMemory(&pi, sizeof(pi));
 
 	if (CreateProcessW(NULL, command, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi) == FALSE) {
 		MessageBoxA(0, "Failed calling CreateProcess()", title, MB_ICONERROR|MB_OK);
