@@ -22,10 +22,9 @@
  * SOFTWARE.
  */
 
+#include <vector>
 #include <stdint.h>
 #include <wchar.h>
-
-#define SZRESLIST 12
 
 #define KEYBOARD_CTRLS 0
 #define GAMEPAD_CTRLS 1
@@ -45,15 +44,14 @@ typedef unsigned char uchar;
 typedef struct {
 	uint16_t w;
 	uint16_t h;
-	const char *l;
+	char l[32];
 } res_t;
 
 
 class configuration
 {
 public:
-	/* hardcoded resolution list */
-	static const res_t resList[SZRESLIST];
+	std::vector<res_t> resList;
 
 private:
 	const wchar_t *_confFile = NULL;
@@ -78,6 +76,9 @@ private:
 	uchar _keyY = 0;
 	uchar _keyStart = 0;
 
+	static bool compareRes(res_t a, res_t b);
+	static bool predRes(res_t a, res_t b);
+
 public:
 	configuration(const wchar_t *filename);
 
@@ -88,7 +89,7 @@ public:
 
 	uchar screenCount() { return _screenCount; }
 	static bool isIgnoredKey(uchar dx);
-	static const char *getReslistL(int n);
+	void initReslist(void);
 
 	/* get config values */
 	size_t resN()      { return _resN; }

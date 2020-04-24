@@ -45,42 +45,15 @@
 #define TO_UINT32(x)  static_cast<uint32_t>(((0xFF & x[0]) << 0 | (0xFF & x[1]) << 8 | (0xFF & x[2]) << 16 | (0xFF & x[3]) << 24))
 
 
-const res_t configuration::resList[SZRESLIST] =
-{
-	{640, 480, "640x480"},
-	{800, 600, "800x600"},
-	{1024, 768, "1024x768"},
-	{1152, 864, "1152x864"},
-	{1280, 720, "1280x720"},
-	{1280, 800, "1280x800"},
-	{1280, 960, "1280x960"},
-	{1600, 900, "1600x900"},
-	{1680, 1050, "1680x1050"},
-	{1400, 1050, "1400x1050"},
-	{1440, 900, "1440x900"},
-	{1920, 1080, "1920x1080"}
-};
-
-
-const char *configuration::getReslistL(int n)
-{
-	if (n <= 0) {
-		return resList[0].l;
-	} else if (n >= SZRESLIST) {
-		return resList[SZRESLIST - 1].l;
-	}
-	return resList[n].l;
-}
-
 void configuration::resN(size_t n)
 {
 	if (n <= 0) {
 		n = 0;
-	} else if (n >= SZRESLIST) {
-		n = SZRESLIST - 1;
+	} else if (n >= resList.size()) {
+		n = resList.size() - 1;
 	}
-	_resW = resList[n].w;
-	_resH = resList[n].h;
+	_resW = resList.at(n).w;
+	_resH = resList.at(n).h;
 	_resN = n;
 }
 
@@ -159,8 +132,8 @@ bool configuration::loadConfig(void)
 	_resH = TO_UINT16(p);
 	p += 2;
 
-	for (int i = 0; i < SZRESLIST; ++i) {
-		if (_resW == resList[i].w && _resH == resList[i].h) {
+	for (size_t i = 0; i < resList.size(); ++i) {
+		if (_resW == resList.at(i).w && _resH == resList.at(i).h) {
 			_resN = i;
 			resFound = true;
 			break;
@@ -168,8 +141,8 @@ bool configuration::loadConfig(void)
 	}
 
 	if (!resFound) {
-		_resW = resList[0].w;
-		_resH = resList[0].h;
+		_resW = resList.at(0).w;
+		_resH = resList.at(0).h;
 		_resN = 0;
 	}
 
@@ -229,8 +202,8 @@ void configuration::setDefaultKeys(void)
 void configuration::loadDefaultConfig(void)
 {
 	_resN = 0;
-	_resW = resList[_resN].w;
-	_resH = resList[_resN].h;
+	_resW = resList.at(_resN).w;
+	_resH = resList.at(_resN).h;
 	_fullscreen = 0;
 	_language = 0;  /* English */
 	_controls = KEYBOARD_CTRLS;
@@ -356,6 +329,42 @@ void configuration::key(uchar n, int type)
 	}
 }
 
+bool configuration::compareRes(res_t a, res_t b) {
+	return (a.w * a.h) > (b.w * b.h);
+}
+
+bool configuration::predRes(res_t a, res_t b) {
+	return (a.w == b.w && a.h == b.h);
+}
+
+void configuration::initReslist(void)
+{
+	DEVMODEA dm;
+	char name[32];
+
+	memset(&dm, 0, sizeof(dm));
+	dm.dmSize = sizeof(dm);
+	resList.erase(resList.begin(), resList.end());
+
+	// TODO: use EnumDisplayDevices?
+	_snprintf_s(name, sizeof(name) - 1, "\\\\.\\DISPLAY%d", _display + 1);
+
+	for (int i=0; EnumDisplaySettingsA(name, i, &dm); ++i) {
+		res_t res;
+		res.w = static_cast<uint16_t>(dm.dmPelsWidth);
+		res.h = static_cast<uint16_t>(dm.dmPelsHeight);
+		_snprintf_s(res.l, sizeof(res.l) - 1, "%dx%d", res.w, res.h);
+		resList.push_back(res);
+	}
+
+	std::sort(resList.begin(), resList.end(), compareRes);
+	auto last = std::unique(resList.begin(), resList.end(), predRes);
+
+	if (last != resList.end()) {
+		resList.erase(last, resList.end());
+	}
+}
+
 configuration::configuration(const wchar_t *filename)
 {
 	_confFile = filename;
@@ -364,5 +373,9 @@ configuration::configuration(const wchar_t *filename)
 	if (_screenCount == 0) {
 		_screenCount = 1;
 	}
+
+	initReslist();
+	//res_t r = { 0, 0, "" };
+	//resList.push_back(r);
 }
 

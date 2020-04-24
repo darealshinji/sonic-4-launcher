@@ -182,6 +182,7 @@ static void startWindow(bool restart, int setX, int setY);
 static configuration *config = NULL;
 static DirectInput *directinput = NULL;
 static MyWindow *win = NULL;
+static Fl_Menu_Item *resItems = NULL;
 static Fl_Group *g2_keyboard, *g2_gamepad;
 static kbButton *btUp, *btDown, *btLeft, *btRight, *btA, *btB, *btX, *btY, *btStart;
 
@@ -702,10 +703,30 @@ static void setResolution_cb(Fl_Widget *o, void *)
 	config->resN(b->value());
 }
 
-static void setDisplay_cb(Fl_Widget *o, void *)
+static void loadReslist(void)
 {
-	MyChoice *b = dynamic_cast<MyChoice *>(o);
-	config->display(static_cast<uchar>(b->value()));
+	if (resItems) {
+		delete[] resItems;
+	}
+
+	config->initReslist();
+	resItems = new Fl_Menu_Item[config->resList.size() + 1];
+
+	for (size_t i = 0; i < config->resList.size(); ++i) {
+		resItems[i] = MENUITEM(config->resList.at(i).l);
+	}
+	resItems[config->resList.size()] = { 0 };
+}
+
+static void setDisplay_cb(Fl_Widget *o, void *v)
+{
+	MyChoice *d = dynamic_cast<MyChoice *>(o);
+	MyChoice *r = reinterpret_cast<MyChoice *>(v);
+	config->display(static_cast<uchar>(d->value()));
+	loadReslist();
+	r->menu(resItems);
+	r->value(0);
+	r->redraw();
 }
 
 static void setLang_cb(Fl_Widget *o, void *)
@@ -799,6 +820,7 @@ static void startWindow(bool restart, int setX, int setY)
 	Fl_Tabs *tabs;
 	Fl_Group *g1, *g2;
 	Fl_Button *bigButton;
+	MyChoice *resChoice;
 	std::string *devLabels;
 	Fl_Menu_Item *devItems;
 	char buf[128], bufJB[128], bufJS[128];
@@ -836,14 +858,6 @@ static void startWindow(bool restart, int setX, int setY)
 			/* "Settings" */
 			g1 = new Fl_Group(32, 36, 698, 512, ui_Settings[lang]);
 			{
-				/* Resolution list */
-				Fl_Menu_Item resItems[SZRESLIST + 1];
-
-				for (int i = 0; i < SZRESLIST; ++i) {
-					resItems[i] = MENUITEM(configuration::getReslistL(i));
-				}
-				resItems[SZRESLIST] = {0};
-
 				/* Display list */
 				for (int i = 0; i < sc; ++i) {
 					_snprintf_s(buf, sizeof(buf) - 1, "Display %d", i);
@@ -857,16 +871,18 @@ static void startWindow(bool restart, int setX, int setY)
 				o->align(FL_ALIGN_BOTTOM_LEFT);
 				o->image(&back1); }
 
+				/* Resolution */
+				loadReslist();
+				resChoice = new MyChoice(42, 112, 328, 24, ui_Resolution[lang]);
+				resChoice->menu(resItems);
+				resChoice->value(config->resN());
+				resChoice->callback(setResolution_cb);
+
 				/* Display selection */
 				{ MyChoice *o = new MyChoice(42, 64, 328, 24, ui_GraphicsDevice[lang]);
 				o->menu(devItems);
-				o->callback(setDisplay_cb); }
-
-				/* Resolution */
-				{ MyChoice *o = new MyChoice(42, 112, 328, 24, ui_Resolution[lang]);
-				o->menu(resItems);
-				o->value(config->resN());
-				o->callback(setResolution_cb); }
+				o->value(config->display());
+				o->callback(setDisplay_cb, reinterpret_cast<void *>(resChoice)); }
 				
 				/* Fullscreen */
 				{ Fl_Check_Button *o = new Fl_Check_Button(42, 150, 328, 24, ui_Fullscreen[lang]);
