@@ -339,15 +339,23 @@ bool configuration::predRes(res_t a, res_t b) {
 
 void configuration::initReslist(void)
 {
+	DISPLAY_DEVICEA dd;
 	DEVMODEA dm;
-	char name[32];
+	char *name = NULL;
+
+	if (_screenCount > 1) {
+		memset(&dd, 0, sizeof(dd));
+		dd.cb = sizeof(dd);
+
+		if (EnumDisplayDevicesA(NULL, _display, &dd, EDD_GET_DEVICE_INTERFACE_NAME)) {
+			name = dd.DeviceName;
+		}
+	}
 
 	memset(&dm, 0, sizeof(dm));
 	dm.dmSize = sizeof(dm);
-	resList.erase(resList.begin(), resList.end());
 
-	// TODO: use EnumDisplayDevices?
-	_snprintf_s(name, sizeof(name) - 1, "\\\\.\\DISPLAY%d", _display + 1);
+	resList.erase(resList.begin(), resList.end());
 
 	for (int i=0; EnumDisplaySettingsA(name, i, &dm); ++i) {
 		res_t res;
